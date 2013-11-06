@@ -1,0 +1,23 @@
+﻿@model MyFirstMVCHelloWorld.Models.Game
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Bid</title>
+</head>
+<body>
+    <div>
+        <h3>Please enter a bid for the toll road</h3>
+        @using (Html.BeginForm("BidResult", "Game", FormMethod.Post))
+        {
+            <input type="text" name="Bid" />
+            <input type="submit" value="Bid !" />
+        }
+    </div>
+</body>
+</html>

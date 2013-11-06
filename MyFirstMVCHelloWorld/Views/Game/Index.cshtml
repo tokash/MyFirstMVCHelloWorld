@@ -1,0 +1,22 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <title>Welcome to the Racing Game !</title>
+</head>
+<body>
+    <div>
+        <h3>Welcome to the Racing Game !</h3>
+        Please press the Start button to begin the race
+        @using (Html.BeginForm("Bid","Game",FormMethod.Get))
+        {
+            <input type="submit" value="Start"  />
+        }
+    </div>
+</body>
+</html>
