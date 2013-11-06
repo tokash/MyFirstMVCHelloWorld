@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MyFirstMVCHelloWorld.Models;
 
 namespace MyFirstMVCHelloWorld.Controllers
 {
@@ -13,17 +14,17 @@ namespace MyFirstMVCHelloWorld.Controllers
 
         public ActionResult Index()
         {
-            //Session["GameData"] = new dic
             //Data to pass through the game life cycle:
             //Randomized speeds array
-            MyFirstMVCHelloWorld.Models.Game game = new MyFirstMVCHelloWorld.Models.Game();
-            
+            Session["Game"] = new MyFirstMVCHelloWorld.Models.Game();
 
             return View();
         }
 
         public ActionResult Bid()
-        {            
+        {
+            MyFirstMVCHelloWorld.Models.Game game = (MyFirstMVCHelloWorld.Models.Game)Session["Game"];
+
             return View("Bid");
         }
 

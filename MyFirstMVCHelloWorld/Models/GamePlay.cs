@@ -5,7 +5,7 @@ using System.Text;
 
 namespace MyFirstMVCHelloWorld.Models
 {
-    internal class GamePlay
+    public class GamePlay
     {
         private int _Bid { get; set; }
         private int _RandomCost { get; set; }
