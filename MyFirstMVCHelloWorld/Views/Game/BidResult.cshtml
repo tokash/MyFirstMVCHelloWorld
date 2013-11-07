@@ -1,0 +1,37 @@
+﻿@{
+    Layout = null;
+}
+
+@using (Html.BeginForm("Bid", "Game", FormMethod.Post))
+{
+    <div>
+        <p align="right"><u>Your current Balance is:</u></p>
+        <p align="right">You have @ViewBag.TimeLeft minutes left</p>
+        <p align ="right">You have $@ViewBag.Account left </p>
+
+        <p> <u>Section @ViewBag.CurrentSection out of @ViewBag.RoadSections </u></p>
+
+@{
+    if (ViewBag.UserBid < ViewBag.RandomTollCost)
+    {
+        <p> You indicated that you will be willing to pay $@ViewBag.UserBid to use the toll road.  </p>
+        <p>Our random number generator drew the random price of $@ViewBag.RandomTollCost. </p>
+        <p>Because your price is lower than the toll road’s price, you will not be able complete this section using the toll road and will have to use the regular freeway. </p>
+        <p>You completed 10 miles at a speed of @ViewBag.FreewaySpeed mph, which took you @ViewBag.SectionCoverageTime minutes. </p>
+        
+    }
+    else
+    {
+        <p>You indicated that you will be willing to pay $@ViewBag.UserBid to use the toll road. </p>
+        <p>Our random number generator drew the random price of $@ViewBag.RandomTollCost </p>
+        <p>Because your price is higher or equal to the toll road’s price, you will complete this section using the toll road. </p>
+        <p>You completed 10 miles at a speed of @ViewBag.HighwaySpeed mph, which took you @ViewBag.SectionCoverageTime minutes. </p>
+    }
+}
+
+        <p>Your updated balance is shown above.</p>        
+
+        <input type="submit" value="Next" /> 
+        
+    </div>
+}
