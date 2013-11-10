@@ -2,13 +2,33 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
+using System.Data;
 using System.Linq;
 using System.Web;
+using SQLServerCommon;
 
 namespace MyFirstMVCHelloWorld.Models
 {
+
     public class Game
     {
+        private static readonly string connStringInitial = "Server=TOKASHYOS-PC;Integrated security=SSPI;database=master";
+        //private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;Integrated security=SSPI;database=GameDB";
+        private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
+
+        private static readonly string sqlCommandCreateDB = "CREATE DATABASE RaceGameDB ON PRIMARY " +
+                "(NAME = RaceGameDB, " +
+                "FILENAME = 'D:\\RaceGameDB.mdf', " +
+                "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
+                "LOG ON (NAME = RaceGameDB_LOG, " +
+                "FILENAME = 'D:\\RaceGameDB.ldf', " +
+                "SIZE = 1MB, " +
+                "MAXSIZE = 100MB, " +
+                "FILEGROWTH = 10%)";
+
+        private static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), VelocityFreeway int NOT NULL, PRIMARY KEY (ID))";
+        private static readonly string[] GamePlaysTableColumns = { "VelocityFreeway" };
+
         public Game(string iName = "Racing Game")
         {
             _Name = iName;
@@ -21,6 +41,8 @@ namespace MyFirstMVCHelloWorld.Models
             _CurrentSection = 1;
 
             RandomizeSpeedset();
+
+            CreateEmptyDB();
         }
 
         private string _Name { get; set; }
@@ -127,6 +149,47 @@ namespace MyFirstMVCHelloWorld.Models
             return result;
         }
 
+        private void CreateEmptyDB()
+        {
+            try
+            {
+                //Create DB
+                if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connStringInitial, "RaceGameDB"))
+                {
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(sqlCommandCreateDB, connStringInitial);
 
+                    //Create tables upon DB creation
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, connString);
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public static void AddRecordToDB(int iVelocity)//Drug iDrug)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+            foreach (string column in GamePlaysTableColumns)
+            {
+                parameters.Add(String.Format("@{0}", column), iVelocity.ToString());
+            }
+
+            try
+            {
+                //DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select 1 from {0} where {1} = {2};", "GamePlays", "ID", "'" + iDrug.Name.Replace("'", "") + "'"), connString);
+                //if (dt.Rows.Count == 0)
+                //{
+                    SQLServerCommon.SQLServerCommon.Insert("GamePlays", connString, GamePlaysTableColumns, parameters);
+                //}
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }

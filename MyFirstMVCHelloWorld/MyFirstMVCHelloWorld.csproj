@@ -42,6 +42,9 @@
     <PackageAsSingleFile>false</PackageAsSingleFile>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SQLServerCommon">
+      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -112,6 +115,10 @@
     <Compile Include="ListExtentionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\GameDB.mdf" />
+    <Content Include="App_Data\GameDB_log.ldf">
+      <DependentUpon>GameDB.mdf</DependentUpon>
+    </Content>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -168,6 +175,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <None Include="Properties\PublishProfiles\RaceGame.pubxml" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
@@ -206,9 +214,7 @@
     <Content Include="Views\Game\BidResult.cshtml" />
     <Content Include="Views\Game\GameEnd.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

@@ -9,6 +9,10 @@ namespace MyFirstMVCHelloWorld.Controllers
 {
     public class GameController : Controller
     {
+
+        //private static readonly string connString = "Server=TOKASHYOS-PC;Integrated security=SSPI;database=GameDB";
+        private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
+
         //
         // GET: /Game/
 
@@ -86,6 +90,9 @@ namespace MyFirstMVCHelloWorld.Controllers
 
             game.CurrentSection++;
             Session["Game"] = game;
+
+            Game.AddRecordToDB(game.SpeedSet[game.CurrentSection - 1].VelocityFreeway);
+            //SQLServerCommon.SQLServerCommon.Insert("GamePlays", connString, columns, );
 
             if (ViewBag.CurrentSection < game.RoadSections && game.Account > 0 && game.TimeLeft > 0)
             {
