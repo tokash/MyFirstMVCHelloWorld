@@ -10,8 +10,9 @@ namespace MyFirstMVCHelloWorld.Controllers
     public class GameController : Controller
     {
 
-        //private static readonly string connString = "Server=TOKASHYOS-PC;Integrated security=SSPI;database=GameDB";
-        private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
+        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User Id=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
+        //private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
 
         //
         // GET: /Game/
@@ -22,6 +23,7 @@ namespace MyFirstMVCHelloWorld.Controllers
             //Randomized speeds array
             Session.Timeout = 10;
             Session["Game"] = new MyFirstMVCHelloWorld.Models.Game();
+            Session["UserID"] = Game.GenerateUniqueID();
 
             return View();
         }
@@ -45,6 +47,7 @@ namespace MyFirstMVCHelloWorld.Controllers
         {
             MyFirstMVCHelloWorld.Models.Game game = (MyFirstMVCHelloWorld.Models.Game)Session["Game"];
             double sectionCoverageTime = 0;
+            ViewResult result = new ViewResult();
 
             //Need to calculte a randome number and compare it to the gamer bid
             int userBid = int.Parse(Request.Form["txtbxBid"]);
@@ -88,29 +91,55 @@ namespace MyFirstMVCHelloWorld.Controllers
             ViewBag.CurrentSection = game.CurrentSection;
             ViewBag.RoadSections = game.RoadSections;
 
-            game.CurrentSection++;
             Session["Game"] = game;
+            game.GamePlays.Add(new GamePlay()
+                                   {
+                                       UserID = (string)Session["UserID"],
+                                       Section = game.CurrentSection,
+                                       FreewayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
+                                       TollwayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
+                                       PriceSubject = userBid,
+                                       PriceRandom = randomCost,
+                                       CurrentAccount = game.Account,
+                                       TimeLeft = game.TimeLeft
+                                   }
+                                   );
 
-            Game.AddRecordToDB(game.SpeedSet[game.CurrentSection - 1].VelocityFreeway);
-            //SQLServerCommon.SQLServerCommon.Insert("GamePlays", connString, columns, );
+            //Game.AddRecordToDB(game.CurrentSection,
+            //                   game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
+            //                   game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
+            //                   userBid,
+            //                   randomCost,
+            //                   game.Account,
+            //                   game.TimeLeft);
 
+            game.CurrentSection++;
             if (ViewBag.CurrentSection < game.RoadSections && game.Account > 0 && game.TimeLeft > 0)
             {
                 //Go to step1
-                return View();
+                result = View();
             }
             else
             {
                 //Go to game end;
-                if (game.Account <= 0)
+                if (game.Account <= 0 || game.TimeLeft <= 0)
                 {
                     //in this case, the game ended because the user lost all time or money
                 }
                 ViewBag.Code = game.GenerateGUID();
 
-                return View("GameEnd");
+                //write game results to DB
+                foreach (GamePlay play in game.GamePlays)
+                {
+                    Game.AddRecordToDB(play);
+                }
+
+
+                result = View("GameEnd");
             }
-            
+
+
+            return result;
         }
 
     }

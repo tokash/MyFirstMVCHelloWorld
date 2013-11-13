@@ -5,9 +5,16 @@ using System.Text;
 
 namespace MyFirstMVCHelloWorld.Models
 {
+
     public class GamePlay
     {
-        private int _Bid { get; set; }
-        private int _RandomCost { get; set; }
+        public string UserID { get; set; }
+        public int Section { get; set; }
+        public int FreewayVelocity { get; set; }
+        public int TollwayVelocity { get; set; }
+        public int PriceSubject { get; set; }
+        public int PriceRandom { get; set; }
+        public int CurrentAccount { get; set; }
+        public double TimeLeft { get; set; }
     }
 }

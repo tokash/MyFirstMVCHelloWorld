@@ -29,7 +29,21 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PublishDatabases>false</PublishDatabases>
+    <PublishDatabases>true</PublishDatabases>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="DefaultConnection-Deployment" Order="1">
+          <Destination Path="Server=tcp:fqw1x1y2s2.database.windows.net,1433%3bDatabase=GameRaceDB%3bUser ID=tokash%40fqw1x1y2s2%3bPassword={your_password_here}%3bTrusted_Connection=False%3bEncrypt=True%3bConnection Timeout=30%3b" />
+          <Object Type="DbFullSql">
+            <PreSource Path="Data Source=TOKASHYO-PC\\SQLEXPRESS%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Debug\AutoScripts\DefaultConnection-Deployment_SchemaOnly.sql" Transacted="True" />
+          </Object>
+          <Object Type="DbFullSql" Enabled="True">
+            <Source Path="Scripts\GamePlaysSchema.sql" Transacted="False" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -40,10 +54,21 @@
     <WarningLevel>4</WarningLevel>
     <PublishDatabases>true</PublishDatabases>
     <PackageAsSingleFile>false</PackageAsSingleFile>
+    <PublishDatabaseSettings>
+      <Objects>
+        <ObjectGroup Name="DefaultConnection-Deployment" Order="1">
+          <Destination Path="" />
+          <Object Type="DbFullSql">
+            <PreSource Path="Server=TOKASHYO-PC\\SQLEXPRESS%3bUser Id=sa%3bPassword=tokash30%3bdatabase=RaceGameDB" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <Source Path="obj\Release\AutoScripts\DefaultConnection-Deployment_SchemaOnly.sql" Transacted="True" />
+          </Object>
+        </ObjectGroup>
+      </Objects>
+    </PublishDatabaseSettings>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SQLServerCommon">
-      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+      <HintPath>D:\Projects\GitHub\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
@@ -115,10 +140,6 @@
     <Compile Include="ListExtentionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\GameDB.mdf" />
-    <Content Include="App_Data\GameDB_log.ldf">
-      <DependentUpon>GameDB.mdf</DependentUpon>
-    </Content>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
     <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
@@ -176,7 +197,12 @@
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
     <None Include="Properties\PublishProfiles\RaceGame.pubxml" />
+    <None Include="Properties\PublishProfiles\RacingGameStaging - FTP %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\RacingGameStaging - FTP.pubxml" />
+    <None Include="Properties\PublishProfiles\RacingGameStaging - Web Deploy %282%29.pubxml" />
+    <None Include="Properties\PublishProfiles\RacingGameStaging - Web Deploy.pubxml" />
     <None Include="Properties\PublishProfiles\Test.pubxml" />
+    <None Include="Properties\PublishProfiles\TestLocal.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
     <Content Include="Scripts\jquery-1.7.1.min.js" />
@@ -214,7 +240,9 @@
     <Content Include="Views\Game\BidResult.cshtml" />
     <Content Include="Views\Game\GameEnd.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
   </ItemGroup>

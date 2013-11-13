@@ -12,9 +12,11 @@ namespace MyFirstMVCHelloWorld.Models
 
     public class Game
     {
-        private static readonly string connStringInitial = "Server=TOKASHYOS-PC;Integrated security=SSPI;database=master";
-        //private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;Integrated security=SSPI;database=GameDB";
-        private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
+        private static readonly string connStringInitial = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
+        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
+        private static readonly string dbName = "RaceGameDB";//"GameRaceDB";
+        //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
 
         private static readonly string sqlCommandCreateDB = "CREATE DATABASE RaceGameDB ON PRIMARY " +
                 "(NAME = RaceGameDB, " +
@@ -26,8 +28,8 @@ namespace MyFirstMVCHelloWorld.Models
                 "MAXSIZE = 100MB, " +
                 "FILEGROWTH = 10%)";
 
-        private static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), VelocityFreeway int NOT NULL, PRIMARY KEY (ID))";
-        private static readonly string[] GamePlaysTableColumns = { "VelocityFreeway" };
+        private static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(30) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeLeft real NOT NULL , PRIMARY KEY (ID))";
+        private static readonly string[] GamePlaysTableColumns = {"UserID", "Section", "VelocityFreeway", "VelocityTollway", "PriceSubject", "PriceRandom", "Account", "TimeLeft" };
 
         public Game(string iName = "Racing Game")
         {
@@ -37,6 +39,7 @@ namespace MyFirstMVCHelloWorld.Models
             _Account = int.Parse(_GameData["StartingGamerCash"]);
             _TimeLeft = double.Parse(_GameData["StartingGamerTime"]);
             _RoadSections = int.Parse(_GameData["RoadSections"]);
+            _GamePlays = new List<GamePlay>();
 
             _CurrentSection = 1;
 
@@ -109,7 +112,17 @@ namespace MyFirstMVCHelloWorld.Models
 
 
         private List<GamePlay> _GamePlays = new List<GamePlay>();
-        public List<GamePlay> GamePlays { get; set; }
+        public List<GamePlay> GamePlays
+        { 
+            get
+            {
+                return _GamePlays;
+            }
+            //set
+            //{
+
+            //}
+        }
 
         private void RandomizeSpeedset()
         {
@@ -154,13 +167,21 @@ namespace MyFirstMVCHelloWorld.Models
             try
             {
                 //Create DB
-                if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connStringInitial, "RaceGameDB"))
+                if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connStringInitial, dbName))
                 {
                     SQLServerCommon.SQLServerCommon.ExecuteNonQuery(sqlCommandCreateDB, connStringInitial);
 
                     //Create tables upon DB creation
                     SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, connString);
                 }
+
+                ////LocalDB = "RaceGameDB"
+                //if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connString, dbName))
+                //{
+                //    //Create tables upon DB creation
+                //    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, connString);
+                //}
+
             }
             catch (Exception)
             {
@@ -168,14 +189,26 @@ namespace MyFirstMVCHelloWorld.Models
             }
         }
 
-        public static void AddRecordToDB(int iVelocity)//Drug iDrug)
+        public static void AddRecordToDB(int iSection,
+                                         int iFreewayVelocity,
+                                         int iTollwayVelocity,
+                                         int iPriceSubject,
+                                         int iPriceRandom,
+                                         int iAccount,
+                                         double iTimeLeft)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
-            foreach (string column in GamePlaysTableColumns)
-            {
-                parameters.Add(String.Format("@{0}", column), iVelocity.ToString());
-            }
+            //foreach (string column in GamePlaysTableColumns)
+            //{
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[0]), iSection.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[1]), iFreewayVelocity.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[2]), iTollwayVelocity.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[3]), iPriceSubject.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[4]), iPriceRandom.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[5]), iAccount.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[6]), iTimeLeft.ToString());
+            //}
 
             try
             {
@@ -190,6 +223,46 @@ namespace MyFirstMVCHelloWorld.Models
 
                 throw;
             }
+        }
+
+        public static void AddRecordToDB(GamePlay iGamePlay)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+            //foreach (string column in GamePlaysTableColumns)
+            //{
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[0]), iGamePlay.UserID.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[1]), iGamePlay.Section.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[2]), iGamePlay.FreewayVelocity.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[3]), iGamePlay.TollwayVelocity.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[4]), iGamePlay.PriceSubject.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[5]), iGamePlay.PriceRandom.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[6]), iGamePlay.CurrentAccount.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[7]), iGamePlay.TimeLeft.ToString());
+            //}
+
+            try
+            {
+                //DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select 1 from {0} where {1} = {2};", "GamePlays", "ID", "'" + iDrug.Name.Replace("'", "") + "'"), connString);
+                //if (dt.Rows.Count == 0)
+                //{
+                SQLServerCommon.SQLServerCommon.Insert("GamePlays", connString, GamePlaysTableColumns, parameters);
+                //}
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public static string GenerateUniqueID()
+        {
+            string s = string.Empty;
+
+            s = DateTime.Now.ToString("dd.mm.yyyy_hh.mm.ss.fffffff");
+
+            return s;
         }
     }
 }
