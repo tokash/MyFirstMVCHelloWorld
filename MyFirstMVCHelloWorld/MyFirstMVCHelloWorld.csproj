@@ -29,17 +29,14 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PublishDatabases>true</PublishDatabases>
+    <PublishDatabases>false</PublishDatabases>
     <PublishDatabaseSettings>
       <Objects>
-        <ObjectGroup Name="DefaultConnection-Deployment" Order="1">
-          <Destination Path="Server=tcp:fqw1x1y2s2.database.windows.net,1433%3bDatabase=GameRaceDB%3bUser ID=tokash%40fqw1x1y2s2%3bPassword={your_password_here}%3bTrusted_Connection=False%3bEncrypt=True%3bConnection Timeout=30%3b" />
-          <Object Type="DbFullSql">
-            <PreSource Path="Data Source=TOKASHYO-PC\\SQLEXPRESS%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+        <ObjectGroup Name="DefaultConnection-Deployment" Order="1" Enabled="False">
+          <Destination Path="" />
+          <Object Type="DbFullSql" Enabled="False">
+            <PreSource Path="" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
             <Source Path="obj\Debug\AutoScripts\DefaultConnection-Deployment_SchemaOnly.sql" Transacted="True" />
-          </Object>
-          <Object Type="DbFullSql" Enabled="True">
-            <Source Path="Scripts\GamePlaysSchema.sql" Transacted="False" />
           </Object>
         </ObjectGroup>
       </Objects>
@@ -68,7 +65,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="SQLServerCommon">
-      <HintPath>D:\Projects\GitHub\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
