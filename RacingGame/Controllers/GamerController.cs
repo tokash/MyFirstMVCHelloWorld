@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-namespace MyFirstMVCHelloWorld.Controllers
+namespace RacingGame.Controllers
 {
     public class GamerController : Controller
     {

@@ -11,7 +11,7 @@
     <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MyFirstMVCHelloWorld</RootNamespace>
+    <RootNamespace>RacingGame</RootNamespace>
     <AssemblyName>MyFirstMVCHelloWorld</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
@@ -128,13 +128,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Game.cs" />
-    <Compile Include="Models\Gamer.cs" />
+    <Compile Include="Classes\Game.cs" />
+    <Compile Include="Models\Bid.cs" />
     <Compile Include="Models\GamePlay.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RandomNumbersGenerator.cs" />
-    <Compile Include="SpeedSet.cs" />
-    <Compile Include="ListExtentionMethods.cs" />
+    <Compile Include="Classes\RandomNumbersGenerator.cs" />
+    <Compile Include="Classes\SpeedSet.cs" />
+    <Compile Include="Classes\ListExtentionMethods.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -236,6 +236,7 @@
     <Content Include="Views\Game\Bid.cshtml" />
     <Content Include="Views\Game\BidResult.cshtml" />
     <Content Include="Views\Game\GameEnd.cshtml" />
+    <Content Include="Views\Game\FirstPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

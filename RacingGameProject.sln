@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFirstMVCHelloWorld", "MyFirstMVCHelloWorld\MyFirstMVCHelloWorld.csproj", "{7EB01125-4FF7-4E48-88A3-818CC9660E12}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilityTester", "UtilityTester\UtilityTester.csproj", "{DD51E5FC-73B5-41B4-8A0A-A3585081A329}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RacingGame", "RacingGame\RacingGame.csproj", "{7EB01125-4FF7-4E48-88A3-818CC9660E12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,14 +11,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Release|Any CPU.Build.0 = Release|Any CPU
 		{DD51E5FC-73B5-41B4-8A0A-A3585081A329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DD51E5FC-73B5-41B4-8A0A-A3585081A329}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD51E5FC-73B5-41B4-8A0A-A3585081A329}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD51E5FC-73B5-41B4-8A0A-A3585081A329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7EB01125-4FF7-4E48-88A3-818CC9660E12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

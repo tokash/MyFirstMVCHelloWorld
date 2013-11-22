@@ -1,0 +1,39 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+
+<html>
+<head>
+    <title>The Driving Game Research Study</title>
+</head>
+<body>
+    <div>
+        <h3>Driving Game Research Study</h3>
+        
+        @using (Html.BeginForm("Bid", "Game", FormMethod.Get))
+        {
+            <p>Hello! I am a researcher from a large university and I am conducting a marketing research survey about using toll roads. In this research, I am interested in knowing how much are people willing to pay in order to use toll roads. To explore that question, I will ask you to play a simple game. In this game, you need to complete a journey of 100 miles that is divided to ten sections of 10 miles each. Your general objective is to complete the entire 100 miles journey in the minimal time possible, while spending the least amount of money.</p>
+
+            <p>You will start with a balance of 100 “game” dollars, which you will be able to use to pay for the toll road in each section. In each section, you can either spend some money to use the toll road – which will save you some time and let you complete the journey faster – or keep your money and use the regular freeway (but not save any time).</p>
+
+            <p>At the end, the ratio between the number of minutes you saved and the number of dollars you spent will determine your bonus. The number of minutes you saved by using the toll road will be calculated in comparison to the time you would have spent if you had used the regular freeway. The ratio between the number of minutes you saved and the number of dollars you spent will be multiplied by 50 cents, and that would be your bonus.</p>
+            <p>example, if you save 20 minutes and spend 10 dollars, that is a ratio of 2 and you will get a bonus of $1. In contrast, if you save 5 minutes and spend 10 dollars, that is a ratio of 0.5 and you will get $0.25 as a bonus.</p>
+            <p> you can see, you will win a larger bonus if you save more time and spend less money to do so. You need to try and maximize both objectives in order to win the highest bonus possible. In the current game, the bonus you can win ranges from $0 to $2.5 and will be given to you through your MTurk account in addition to the $1 you will get for completing this study. Thus, your total payment will be between $1 and $3.5.</p>
+
+            <p>To make sure these instructions are clear, please answer the following question: </p>
+
+            <p>*In which of the following situation you will be able to earn the highest amount of money? </p>
+            <p>@Html.RadioButton("rbtnAnswer" , "If I save 50 minutes and spend $100+")If I save 50 minutes and spend $100+</p>
+            <p>@Html.RadioButton("rbtnAnswer" , "If I save 60 minutes and spend $100")If I save 60 minutes and spend $100</p>
+            <p>@Html.RadioButton("rbtnAnswer" , "If I save 50 minutes and spend $50")If I save 50 minutes and spend $50</p>
+            <p>@Html.RadioButton("rbtnAnswer" , "If I save 60 minutes and spend $50")If I save 60 minutes and spend $50</p>
+        
+            <p>Please press the Start button to begin the race</p>
+            <input type="submit" value="Start"  />
+        }
+    </div>
+</body>
+</html>

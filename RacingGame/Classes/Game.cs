@@ -7,13 +7,13 @@ using System.Linq;
 using System.Web;
 using SQLServerCommon;
 
-namespace MyFirstMVCHelloWorld.Models
+namespace RacingGame.Models
 {
 
     public class Game
     {
-        private static readonly string connStringInitial = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
-        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        private static readonly string connStringInitial = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
+        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         private static readonly string dbName = "RaceGameDB";//"GameRaceDB";
         //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
@@ -40,6 +40,7 @@ namespace MyFirstMVCHelloWorld.Models
             _TimeLeft = double.Parse(_GameData["StartingGamerTime"]);
             _RoadSections = int.Parse(_GameData["RoadSections"]);
             _GamePlays = new List<GamePlay>();
+            _TimeSaved = 0;
 
             _CurrentSection = 1;
 
@@ -82,6 +83,20 @@ namespace MyFirstMVCHelloWorld.Models
             set
             {
                 _TimeLeft = value;
+            }
+        }
+
+        private double _TimeSaved;
+        public double TimeSaved
+        {
+            get
+            {
+                return _TimeSaved;
+            }
+
+            set
+            {
+                _TimeSaved = value;
             }
         }
 

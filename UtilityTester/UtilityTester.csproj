@@ -48,9 +48,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MyFirstMVCHelloWorld\MyFirstMVCHelloWorld.csproj">
+    <ProjectReference Include="..\RacingGame\RacingGame.csproj">
       <Project>{7eb01125-4ff7-4e48-88a3-818cc9660e12}</Project>
-      <Name>MyFirstMVCHelloWorld</Name>
+      <Name>RacingGame</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,7 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Web;
 
-namespace MyFirstMVCHelloWorld
+namespace RacingGame
 {
     public static class RandomNumberGenerator
     {
