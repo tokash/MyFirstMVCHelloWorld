@@ -1,0 +1,40 @@
+﻿@model RacingGame.Models.Question
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+<html>
+<head>
+    <title>The Driving Game Research Study</title>
+</head>
+<body>
+    <div>
+        <h3>Driving Game Research Study</h3>
+        
+        @using (Html.BeginForm("SecondPage", "Game", FormMethod.Post))
+        {
+            <p>When we start the game, you will go through 10 sections of 10 miles each. In each of the 10 miles section, you will have two possible routes from which to choose. One route is a regular freeway and the other route is a paid toll road. We will tell you at what speed you will drive on each route, if you choose it. The speed of the toll road will always be faster than that of the regular freeway, but the specific speeds of each road will be different in each section.</p>
+ 
+            <p>In each section, you will bid on the opportunity to use the toll road by stating the highest amount of money you would be willing to pay for it. Then, the price of the toll road will be determined randomly using a computerized random number generator. Your price would be compared to that random price to determine if you can use the toll road or not: If your price would be equal or greater than the price of the toll road, you will be able to use the toll road at its designated price. If your price would be lower than the price of the toll road, you will not be able to use the toll road and would have to complete that section using the regular freeway only. For example, if you say you will pay 5 dollars for a toll road and the random number generator produces a price of 6 dollars, you will not be able to use the toll road. In contrast, if you say you will pay 5 dollars and the random price was 4 dollars, you will be able to use the toll road at a price of 4 dollars.</p>
+
+            <p>You probably already realized that this procedure ensures that it is best for you to truthfully reveal the maximum price you are willing to pay for using the toll road. If you give a price that is higher than your true price, you might actually have to pay that higher price. If you give a price that is lower than your true price, you might be disappointed that you will not be able use the toll road and save some time. Note that you cannot influence the price of the toll road with the price you give. The price of the toll road is determined randomly and independently. </p>
+
+            <p>To make sure these instructions are clear, please answer the following question: </p>
+
+            <p>If you bid $10, in which of the following situations will you be able to use the toll road? </p>
+            <p>@Html.RadioButton("rbtnAnswer", "If the toll road’s price is exactly $10")If the toll road’s price is exactly $10</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If the toll road’s price is less than $10")If the toll road’s price is less than $10</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If the toll road’s price is less than or equal to $10")If the toll road’s price is less than or equal to $10</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If the toll road’s price is higher than $10")If the toll road’s price is higher than $10</p>
+            
+            <p><font color="red">@ViewBag.ErrorMessage</font></p>
+        
+            <input type="submit" value="Submit Answer"  />
+        }
+    </div>
+</body>
+</html>

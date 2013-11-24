@@ -31,6 +31,11 @@ namespace RacingGame
 
         }
 
+        //void Application_PreSendRequestHeaders(Object sender, EventArgs e)
+        //{
+        //    Response.Cache.SetCacheability(HttpCacheability.NoCache);
+        //}
+
         protected void Application_Start()
         {
             AreaRegistration.RegisterAllAreas();

@@ -12,24 +12,24 @@ namespace RacingGame.Models
 
     public class Game
     {
-        private static readonly string connStringInitial = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
-        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        private static readonly string connStringInitial = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
+        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         private static readonly string dbName = "RaceGameDB";//"GameRaceDB";
         //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
 
-        private static readonly string sqlCommandCreateDB = "CREATE DATABASE RaceGameDB ON PRIMARY " +
-                "(NAME = RaceGameDB, " +
-                "FILENAME = 'D:\\RaceGameDB.mdf', " +
+        private static readonly string sqlCommandCreateDB = "CREATE DATABASE " + dbName + " ON PRIMARY " +
+                "(NAME = " + dbName + ", " +
+                "FILENAME = 'D:\\" + dbName + ".mdf', " +
                 "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
-                "LOG ON (NAME = RaceGameDB_LOG, " +
-                "FILENAME = 'D:\\RaceGameDB.ldf', " +
+                "LOG ON (NAME = " + dbName + "_LOG, " +
+                "FILENAME = 'D:\\" + dbName + ".ldf', " +
                 "SIZE = 1MB, " +
                 "MAXSIZE = 100MB, " +
                 "FILEGROWTH = 10%)";
 
-        private static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(30) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeLeft real NOT NULL , PRIMARY KEY (ID))";
-        private static readonly string[] GamePlaysTableColumns = {"UserID", "Section", "VelocityFreeway", "VelocityTollway", "PriceSubject", "PriceRandom", "Account", "TimeLeft" };
+        private static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(30) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeSavedForSection real NOT NULL , PRIMARY KEY (ID))";
+        private static readonly string[] GamePlaysTableColumns = {"UserID", "Section", "VelocityFreeway", "VelocityTollway", "PriceSubject", "PriceRandom", "Account", "TimeSavedForSection" };
 
         public Game(string iName = "Racing Game")
         {
@@ -37,8 +37,12 @@ namespace RacingGame.Models
             _GameData = (NameValueCollection)ConfigurationManager.GetSection("GameConfiguration");
 
             _Account = int.Parse(_GameData["StartingGamerCash"]);
-            _TimeLeft = double.Parse(_GameData["StartingGamerTime"]);
+            _StartingAccount = _Account;
+            //_TimeLeft = double.Parse(_GameData["StartingGamerTime"]);
+            //_StartingTime = _TimeLeft;
+            _TimePassed = 0;
             _RoadSections = int.Parse(_GameData["RoadSections"]);
+            _GameSections = _RoadSections;
             _GamePlays = new List<GamePlay>();
             _TimeSaved = 0;
 
@@ -49,6 +53,7 @@ namespace RacingGame.Models
             CreateEmptyDB();
         }
 
+        #region Members
         private string _Name { get; set; }
 
         private int _RoadSections;
@@ -73,16 +78,29 @@ namespace RacingGame.Models
             }
         }
 
-        private double _TimeLeft;
-        public double TimeLeft
+        //private double _TimeLeft;
+        //public double TimeLeft
+        //{
+        //    get
+        //    {
+        //        return _TimeLeft;
+        //    }
+        //    set
+        //    {
+        //        _TimeLeft = value;
+        //    }
+        //}
+
+        private double _TimePassed;
+        public double TimePassed
         {
             get
             {
-                return _TimeLeft;
+                return _TimePassed;
             }
             set
             {
-                _TimeLeft = value;
+                _TimePassed = value;
             }
         }
 
@@ -125,10 +143,9 @@ namespace RacingGame.Models
             }
         }
 
-
         private List<GamePlay> _GamePlays = new List<GamePlay>();
         public List<GamePlay> GamePlays
-        { 
+        {
             get
             {
                 return _GamePlays;
@@ -138,6 +155,16 @@ namespace RacingGame.Models
 
             //}
         }
+
+        private static double _StartingAccount;
+        public double StartingAccount { get { return _StartingAccount; } }
+
+        private static double _StartingTime;
+        public double StartingTime { get { return _StartingTime; } }
+
+        private static int _GameSections;
+        public int GameSections { get { return _GameSections; } }
+        #endregion
 
         private void RandomizeSpeedset()
         {
@@ -204,25 +231,27 @@ namespace RacingGame.Models
             }
         }
 
-        public static void AddRecordToDB(int iSection,
+        public static void AddRecordToDB(string iUserID,
+                                         int iSection,
                                          int iFreewayVelocity,
                                          int iTollwayVelocity,
                                          int iPriceSubject,
                                          int iPriceRandom,
                                          int iAccount,
-                                         double iTimeLeft)
+                                         double iTimeSaved)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
             //foreach (string column in GamePlaysTableColumns)
             //{
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[0]), iSection.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[1]), iFreewayVelocity.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[2]), iTollwayVelocity.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[3]), iPriceSubject.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[4]), iPriceRandom.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[5]), iAccount.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[6]), iTimeLeft.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[1]), iSection.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[2]), iFreewayVelocity.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[3]), iTollwayVelocity.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[4]), iPriceSubject.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[5]), iPriceRandom.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[6]), iAccount.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[7]), iTimeSaved.ToString());
             //}
 
             try
@@ -253,7 +282,7 @@ namespace RacingGame.Models
             parameters.Add(String.Format("@{0}", GamePlaysTableColumns[4]), iGamePlay.PriceSubject.ToString());
             parameters.Add(String.Format("@{0}", GamePlaysTableColumns[5]), iGamePlay.PriceRandom.ToString());
             parameters.Add(String.Format("@{0}", GamePlaysTableColumns[6]), iGamePlay.CurrentAccount.ToString());
-            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[7]), iGamePlay.TimeLeft.ToString());
+            parameters.Add(String.Format("@{0}", GamePlaysTableColumns[7]), iGamePlay.TimeSaved.ToString());
             //}
 
             try

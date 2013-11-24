@@ -1,7 +1,7 @@
 ﻿@{
     Layout = null;
 }
-
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
 <html>
     <body>
         <div>
@@ -12,25 +12,46 @@
             </div>
 
             <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
-            <p>Thank you. You have completed the game.</p>
+                @{
+                    if (ViewBag.MoneySpent < ViewBag.StartingAccount)
+                    {
+                        <p>Thank you. You have completed the game. </p>
 
-            <p>After 10 sections of 10 miles each, you were able to save a total of @ViewBag.TimeSaved minutes. </p>
-            <p>You spend a total of @ViewBag.MoneySaved dollars on toll roads during the game. </p>
+                        <p>After @ViewBag.Sections sections of 10 miles each, you were able to save a total of @ViewBag.TimeSaved minutes. </p>
+                        <p>You spend a total of @ViewBag.MoneySpent dollars on toll roads during the game. </p>
 
-            <p>The ratio between the time you saved and the money you spent is @ViewBag.SavedSpentRatio </p>
+                        <p>The ratio between the time you saved and the money you spent is @ViewBag.MoneyTimeRatio. </p>
 
-            <p>Your bonus is this score multiplied by 50 cents, which means you will get XXX/YYY*0.50 dollars in bonus. </p>
+                        <p>Your bonus is this score multiplied by 50 cents, which means you will get @ViewBag.Bonus dollars in bonus. </p>        
+                    }
+                    else
+                    {
+                        <!--//user spent all his money-->
+                        <p>You have spent the total $@ViewBag.StartingAccount you were given. </p>
 
-            <p>To receive your payment and bonus, you must copy and paste the confirmation code below back to MTurk. </p>
+                        <p>You cannot go on to the next section because you do not have any more money to bid on using the toll roads. Instead, you will complete the remaining sections using the regular freeways only, which means you will not be able to save any more time. </p>
 
-            <p>Confirmation code: @ViewBag.Code</p>
+                        <p>This is the end of the game for you. </p>
 
-            <p>If you have any comments about this research, please write them below: </p>
-            <p>Thank you very much for taking part in our research!</p>
+                        <p>You were able to save @ViewBag.TimeSaved minutes and spent $@ViewBag.StartingAccount.</p>
+                        <p>The ratio between the time you saved and the money you spent is @ViewBag.MoneyTimeRatio. </p>
 
-            <p>If you have any questions, complaints or suggestions about this research, you may contact the principal investigator, Dr. Eyal Peer from Bar-Ilan University, at eyal.peer@biu.ac.il. </p>
+                        <p>Your bonus is this score multiplied by 50 cents, which means you will get @ViewBag.Bonus dollars in bonus.</p>
+                    }
+                }
+                
 
-            <p>Please click on “End” to submit your responses. </p>
+                <p>To receive your payment and bonus, you must copy and paste the confirmation code below back to MTurk. </p>
+
+                <p>Confirmation code: @ViewBag.Code</p>
+
+                <p>If you have any comments about this research, please write them below: </p>
+                <p>Thank you very much for taking part in our research!</p>
+
+                <p>If you have any questions, complaints or suggestions about this research, you may contact the principal investigator, Dr. Eyal Peer from Bar-Ilan University, at eyal.peer@biu.ac.il. </p>
+
+                <p>Please click on “End” to submit your responses.</p>
+
             </div>
         </div>
     </body>

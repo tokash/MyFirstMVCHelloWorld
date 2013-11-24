@@ -1,10 +1,12 @@
-﻿@{
+﻿@model RacingGame.Models.Question
+
+@{
     Layout = null;
 }
 
 <!DOCTYPE html>
 
-
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
 <html>
 <head>
     <title>The Driving Game Research Study</title>
@@ -13,7 +15,7 @@
     <div>
         <h3>Driving Game Research Study</h3>
         
-        @using (Html.BeginForm("Bid", "Game", FormMethod.Get))
+        @using (Html.BeginForm("FirstPage", "Game", FormMethod.Post))
         {
             <p>Hello! I am a researcher from a large university and I am conducting a marketing research survey about using toll roads. In this research, I am interested in knowing how much are people willing to pay in order to use toll roads. To explore that question, I will ask you to play a simple game. In this game, you need to complete a journey of 100 miles that is divided to ten sections of 10 miles each. Your general objective is to complete the entire 100 miles journey in the minimal time possible, while spending the least amount of money.</p>
 
@@ -26,13 +28,14 @@
             <p>To make sure these instructions are clear, please answer the following question: </p>
 
             <p>*In which of the following situation you will be able to earn the highest amount of money? </p>
-            <p>@Html.RadioButton("rbtnAnswer" , "If I save 50 minutes and spend $100+")If I save 50 minutes and spend $100+</p>
-            <p>@Html.RadioButton("rbtnAnswer" , "If I save 60 minutes and spend $100")If I save 60 minutes and spend $100</p>
-            <p>@Html.RadioButton("rbtnAnswer" , "If I save 50 minutes and spend $50")If I save 50 minutes and spend $50</p>
-            <p>@Html.RadioButton("rbtnAnswer" , "If I save 60 minutes and spend $50")If I save 60 minutes and spend $50</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If I save 50 minutes and spend $100+")If I save 50 minutes and spend $100+</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If I save 60 minutes and spend $100")If I save 60 minutes and spend $100</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If I save 50 minutes and spend $50")If I save 50 minutes and spend $50</p>
+            <p>@Html.RadioButton("rbtnAnswer", "If I save 60 minutes and spend $50")If I save 60 minutes and spend $50</p>
+            
+            <p><font color="red">@ViewBag.ErrorMessage</font></p>
         
-            <p>Please press the Start button to begin the race</p>
-            <input type="submit" value="Start"  />
+            <input type="submit" value="Submit Answer"  />
         }
     </div>
 </body>

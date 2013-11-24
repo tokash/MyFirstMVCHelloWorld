@@ -123,6 +123,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\CacheControlAttribute.cs" />
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\GamerController.cs" />
     <Compile Include="Global.asax.cs">
@@ -131,6 +132,7 @@
     <Compile Include="Classes\Game.cs" />
     <Compile Include="Models\Bid.cs" />
     <Compile Include="Models\GamePlay.cs" />
+    <Compile Include="Models\Question.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\RandomNumbersGenerator.cs" />
     <Compile Include="Classes\SpeedSet.cs" />
@@ -237,6 +239,7 @@
     <Content Include="Views\Game\BidResult.cshtml" />
     <Content Include="Views\Game\GameEnd.cshtml" />
     <Content Include="Views\Game\FirstPage.cshtml" />
+    <Content Include="Views\Game\SecondPage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

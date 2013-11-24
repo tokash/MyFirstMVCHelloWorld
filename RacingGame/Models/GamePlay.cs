@@ -15,6 +15,6 @@ namespace RacingGame.Models
         public int PriceSubject { get; set; }
         public int PriceRandom { get; set; }
         public int CurrentAccount { get; set; }
-        public double TimeLeft { get; set; }
+        public double TimeSaved { get; set; }
     }
 }
