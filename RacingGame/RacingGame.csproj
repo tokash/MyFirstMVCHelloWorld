@@ -240,6 +240,7 @@
     <Content Include="Views\Game\GameEnd.cshtml" />
     <Content Include="Views\Game\FirstPage.cshtml" />
     <Content Include="Views\Game\SecondPage.cshtml" />
+    <Content Include="Views\Game\AfterEndGame.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

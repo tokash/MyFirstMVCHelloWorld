@@ -306,5 +306,23 @@ namespace RacingGame.Controllers
             return result;
         }
 
+        public ActionResult AfterEndGame()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AfterEndGamePost()
+        {
+            string comments = Request.Form["txtbxComments"];
+
+            if (comments != null && comments != string.Empty)
+            {
+                //write to db
+            }
+
+            return Redirect("http://www.google.com");
+        }
+
     }
 }

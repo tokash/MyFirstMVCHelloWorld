@@ -6,9 +6,9 @@
 {
     <div style="text-align: center;" >
         <div style="margin: 0 auto;width:40% ; text-align: right">
-            <p><u>Your current Balance is:</u></p>
+            <p><u>Your current Balance is:</u>$@ViewBag.Account</p>
             <!--<p>You saved a total of @ViewBag.TimeSaved minutes </p> -->
-            <p>You have $@ViewBag.Account left</p> 
+            <!--<p>You have $@ViewBag.Account left</p> -->
         </div>
 
         <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
@@ -20,7 +20,7 @@
         <p> You indicated that you will be willing to pay $@ViewBag.UserBid to use the toll road.  </p>
         <p>Our random number generator drew the random price of $@ViewBag.RandomTollCost. </p>
         <p>Because your price is lower than the toll road’s price, you will not be able complete this section using the toll road and will have to use the regular freeway. </p>
-        <p>You completed 10 miles at a speed of @ViewBag.FreewaySpeed mph, which took you @ViewBag.SectionCoverageTime minutes. </p>
+        <p>You completed 10 miles at a speed of @ViewBag.FreewaySpeed mph</p>//, which took you @ViewBag.SectionCoverageTime minutes. </p>
         
       }
       else
@@ -28,7 +28,7 @@
         <p>You indicated that you will be willing to pay $@ViewBag.UserBid to use the toll road. </p>
         <p>Our random number generator drew the random price of $@ViewBag.RandomTollCost </p>
         <p>Because your price is higher or equal to the toll road’s price, you will complete this section using the toll road. </p>
-        <p>You completed 10 miles at a speed of @ViewBag.HighwaySpeed mph, which took you @ViewBag.SectionCoverageTime minutes. </p>
+        <p>You completed 10 miles at a speed of @ViewBag.HighwaySpeed mph</p>//, which took you @ViewBag.SectionCoverageTime minutes. </p>
       }
     }
     

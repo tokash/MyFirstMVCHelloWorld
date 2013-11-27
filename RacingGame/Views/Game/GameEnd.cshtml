@@ -2,16 +2,9 @@
     Layout = null;
 }
 <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
-<html>
-    <body>
-        <div>
-            <div style="margin: 0 auto;width:40% ; text-align: right">
-            <p><u>Your current Balance is:</u></p>
-            <!--<p>You saved a total of @ViewBag.TimeSaved minutes </p> -->
-            <p>You have $@ViewBag.Account left</p> 
-            </div>
-
-            <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
+@{using (Html.BeginForm("AfterEndGame", "Game", FormMethod.Get))
+  {
+      <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
                 @{
                     if (ViewBag.MoneySpent < ViewBag.StartingAccount)
                     {
@@ -45,14 +38,11 @@
 
                 <p>Confirmation code: @ViewBag.Code</p>
 
-                <p>If you have any comments about this research, please write them below: </p>
-                <p>Thank you very much for taking part in our research!</p>
 
-                <p>If you have any questions, complaints or suggestions about this research, you may contact the principal investigator, Dr. Eyal Peer from Bar-Ilan University, at eyal.peer@biu.ac.il. </p>
-
-                <p>Please click on “End” to submit your responses.</p>
+                <p>Please click on “Next” to continue.</p>
+                <input type="submit" value="Next" />
 
             </div>
-        </div>
-    </body>
-</html>
+  }
+    
+}
