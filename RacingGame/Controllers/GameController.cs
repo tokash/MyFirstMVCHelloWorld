@@ -1,45 +1,61 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using RacingGame.Classes;
 using RacingGame.Models;
 
 namespace RacingGame.Controllers
 {
+    [NoCacheAttribute]
     public class GameController : Controller
     {
 
-        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User Id=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         //private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
 
         //
         // GET: /Game/
 
-        [CacheControl(HttpCacheability.NoCache), HttpGet]
-        public ActionResult FirstPage()
+        private static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , Page int NOT NULL, IsVisited BIT NOT NULL)";
+        private static readonly string[] siteStateTableColumns = { "UserID", "Page", "IsVisited" };
+
+        public ActionResult FirstPage(string id)
         {
             //Data to pass through the game life cycle:
             //Randomized speeds array
             //Session.Timeout = 10;
 
-            Session["Game"] = new RacingGame.Models.Game();
-            Session["UserID"] = Game.GenerateUniqueID();
-            Question q = new Question() { CorrectAnswer = "If I save 60 minutes and spend $50",
-                                          AnswerA = "If I save 50 minutes and spend $100+",
-                                          AnswerB = "If I save 60 minutes and spend $100",
-                                          AnswerC = "If I save 50 minutes and spend $50",
-                                          AnswerD = "If I save 60 minutes and spend $50",
-                                          ErrorMessage = "Your answer is incorrect.  Please read the instructions and try again." };
-            Session["Question1"] = q;
+            if (id != null && id != "")
+            {
+                Session["Game"] = new RacingGame.Models.Game();
+                ViewData["UserID"] = id;
+                //Session["UserID"] = Game.GenerateUniqueID();
+                Question q = new Question()
+                {
+                    CorrectAnswer = "If I save 60 minutes and spend $50",
+                    AnswerA = "If I save 50 minutes and spend $100+",
+                    AnswerB = "If I save 60 minutes and spend $100",
+                    AnswerC = "If I save 50 minutes and spend $50",
+                    AnswerD = "If I save 60 minutes and spend $50",
+                    ErrorMessage = "Your answer is incorrect.  Please read the instructions and try again."
+                };
+                Session["Question1"] = q;
 
-            return View();
+                return View(); 
+            }
+            else
+            {
+                return RedirectToAction("IDRequired");
+            }
         }
 
         [HttpPost]
-        public ActionResult FirstPage(Question model)
+        public ActionResult FirstPage(string id, Question model)
         {
             Question q = (Question)Session["Question1"];
             string answer = Request.Form["rbtnAnswer"];
@@ -62,15 +78,15 @@ namespace RacingGame.Controllers
 
                 ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
 
-                return RedirectToAction("SecondPage");
+                return RedirectToAction("SecondPage", new RouteValueDictionary(new { controller = "Game", action = "SecondPage", Id = id }));
             }
         }
 
-        [CacheControl(HttpCacheability.NoCache), HttpGet]
-        public ActionResult SecondPage()
+        public ActionResult SecondPage(string id)
         {
             Session["Game"] = new RacingGame.Models.Game();
-            Session["UserID"] = Game.GenerateUniqueID();
+            ViewData["UserID"] = id;
+
             Question q = new Question()
             {
                 CorrectAnswer = "If the toll road’s price is less than or equal to $10",
@@ -86,7 +102,7 @@ namespace RacingGame.Controllers
         }
 
         [HttpPost]
-        public ActionResult SecondPage(Question model)
+        public ActionResult SecondPage(string id, Question model)
         {
             Question q = (Question)Session["Question2"];
             string answer = Request.Form["rbtnAnswer"];
@@ -98,23 +114,18 @@ namespace RacingGame.Controllers
             }
             else
             {
-                RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
-                ViewBag.Account = game.Account;
-                //ViewBag.TimeLeft = game.TimeLeft;
-                ViewBag.TimeSaved = game.TimeSaved;
-                ViewBag.CurrentSection = game.CurrentSection;
-                ViewBag.RoadSections = game.RoadSections;
-
-                ViewBag.FreewaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway;
-
-                ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
-
-                return View("Bid");
+                return RedirectToAction("WarningBeforeGame", new RouteValueDictionary(new { controller = "Game", action = "WarningBeforeGame", Id = id }));
             }
         }
 
-        [CacheControl(HttpCacheability.NoCache), HttpGet]
-        public ActionResult Bid()
+        public ActionResult WarningBeforeGame(string id)
+        {
+            ViewData["UserID"] = id;
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult WarningBeforeGamePost(string id)
         {
             RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
             ViewBag.Account = game.Account;
@@ -127,47 +138,95 @@ namespace RacingGame.Controllers
 
             ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
 
-            return View();
+            Session["Game"] = game;
+
+            return RedirectToAction("Bid", new { id = id, pagenumber = 1 });
         }
 
-        [HttpPost]
-        public ActionResult Bid(BidClass model)
+        public ActionResult Bid(string id, int? pagenumber)
         {
             RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
-            ViewBag.Account = game.Account;
-            
-            //ViewBag.TimeSaved = game.TimeSaved;
-            ViewBag.CurrentSection = game.CurrentSection;
-            ViewBag.RoadSections = game.RoadSections;
 
-            ViewBag.FreewaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway;
-
-            ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
-
-            if (!ModelState.IsValidField("Bid"))
+            if (!IsVisitedPage(id, (int)pagenumber))
             {
-                ModelState.AddModelError("Bid", "Please enter a Bid");
-            }
+                ViewData["UserID"] = id;
+                ViewData["PageNumber"] = pagenumber;
 
-            if (!ModelState.IsValid)
-            {
-                return View("Bid");
+                AddStateRecordToDB(id, (int)pagenumber, true);
+
+                ViewBag.Account = game.Account;
+                //ViewBag.TimeLeft = game.TimeLeft;
+                ViewBag.TimeSaved = game.TimeSaved;
+                ViewBag.CurrentSection = game.CurrentSection;
+                ViewBag.RoadSections = game.RoadSections;
+
+                ViewBag.FreewaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway;
+
+                ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
+
+                return View();
             }
             else
             {
-                return RedirectToAction("BidResult", model);
+                return RedirectToAction("PageAlreadyVisited",
+                                        new { id = id, pagenumber = pagenumber }
+                                       );
             }
+        }
+
+        [HttpPost]
+        public ActionResult Bid(string id, int? pagenumber, BidClass model)
+        {
+            RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
+            ViewData["UserID"] = id;
+            ViewData["PageNumber"] = pagenumber;
+
+            //if (!IsVisitedPage(id, game.CurrentSection))
+            //{
+                ViewBag.Account = game.Account;
+
+                //ViewBag.TimeSaved = game.TimeSaved;
+                ViewBag.CurrentSection = game.CurrentSection;
+                ViewBag.RoadSections = game.RoadSections;
+
+                ViewBag.FreewaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway;
+
+                ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
+
+                if (!ModelState.IsValidField("Bid"))
+                {
+                    ModelState.AddModelError("Bid", "Please enter a Bid");
+                }
+
+                if (!ModelState.IsValid)
+                {
+                    return View("Bid");
+                }
+                else
+                {
+                    TempData["BidModel"] = model;
+                    return RedirectToAction("BidResult", new { id = id, pagenumber = pagenumber});
+                } 
+            //}
+            //else
+            //{
+            //    return RedirectToAction("PageAlreadyVisited",
+            //                            new RouteValueDictionary(new { controller = "Game", action = "PageAlreadyVisited", Id = id })
+            //                           );
+            //}
 
             
         }
 
-        [CacheControl(HttpCacheability.NoCache), HttpGet]
-        public ActionResult BidResult(BidClass model)
+        public ActionResult BidResult(string id, int? pagenumber)
         {
             RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
             double sectionCoverageTime = 0;
             double timeSaved = 0.0;
             ViewResult result = null;// new ViewResult();
+            ViewData["UserID"] = id;
+            ViewData["PageNumber"] = pagenumber + 1;
+            BidClass model = (BidClass)TempData["BidModel"];
 
             //Need to calculte a randome number and compare it to the gamer bid
             int userBid = model.Bid;
@@ -217,11 +276,11 @@ namespace RacingGame.Controllers
             ViewBag.RoadSections = game.RoadSections;
 
             Session["Game"] = game;
-            string userID = (string)Session["UserID"];
+            //string userID = (string)Session["UserID"];
 
             game.GamePlays.Add(new GamePlay()
             {
-                UserID = userID,
+                UserID = id,
                 Section = game.CurrentSection,
                 FreewayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
                 TollwayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
@@ -232,7 +291,7 @@ namespace RacingGame.Controllers
             });
 
             #region Write play to DB every play
-            Game.AddRecordToDB(userID,
+            Game.AddRecordToDB(id,
                                game.CurrentSection,
                                game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
                                game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
@@ -306,6 +365,12 @@ namespace RacingGame.Controllers
             return result;
         }
 
+        [HttpPost]
+        public ActionResult BidResultPost(string id, int? pagenumber)
+        {
+            return RedirectToAction("Bid", new { id = id, pagenumber = pagenumber });
+        }
+
         public ActionResult AfterEndGame()
         {
             return View();
@@ -322,6 +387,131 @@ namespace RacingGame.Controllers
             }
 
             return Redirect("http://www.google.com");
+        }
+
+        public ActionResult PageAlreadyVisited(string id, int? pagenumber)
+        {
+            if (pagenumber != null)
+            {
+                ViewBag.Page = pagenumber;
+            }
+            return View();
+        }
+
+        public ActionResult StartOver(string id)
+        {
+            ClearUserStateDataFromDB(id, "siteState", "");
+            Session.Abandon();
+            return RedirectToAction("FirstPage",
+                                        new RouteValueDictionary(new { controller = "Game", action = "FirstPage", Id = id})
+                                       );
+        }
+
+        public ActionResult IDRequired()
+        {
+            return View();
+        }
+
+        public ActionResult IDRequiredPost()
+        {
+            string id = Request.Form["txtbxUserID"];
+
+            if (id != null && id != string.Empty)
+            {
+                return RedirectToAction("FirstPage",
+                                        new RouteValueDictionary(new { controller = "Game", action = "FirstPage", Id = id })
+                                       );
+            }
+            else
+            {
+                return View("IDRequired");
+            }
+
+            
+        }
+
+        private void AddStateRecordToDB(string iUserID,
+                                         int iPage,
+                                         bool iIsVisited)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPage.ToString());
+
+            if (iIsVisited == true)
+            {
+                parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), "1");
+            }
+            else
+            {
+                parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), "1");
+            }
+
+
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4};", "SiteState", "UserID", "'" + iUserID + "'", "Page", iPage), connString);
+                if (dt.Rows.Count == 0)
+                {
+                    SQLServerCommon.SQLServerCommon.Insert("siteState", connString, siteStateTableColumns, parameters);
+                }
+                else
+                {
+                    //this means that the record for the user and page already exists
+                    //need to update current record
+
+                    if (dt.Rows.Count == 1)
+                    {
+                        bool value = (bool)dt.Rows[0]["IsVisited"];
+                        if (value != iIsVisited)
+                        {
+                            //we need to update the value
+                            SQLServerCommon.SQLServerCommon.Update("siteState", connString, siteStateTableColumns, parameters);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        private static void ClearUserStateDataFromDB(string iUserID, string iTableName, string iWhereClause)
+        {
+            SQLServerCommon.SQLServerCommon.Delete(iTableName, connString, iWhereClause);
+        }
+
+        private bool IsVisitedPage(string iUserID, int iPage)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            bool isVisited = false;
+
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPage.ToString());
+
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4};", "SiteState", "UserID", "'" + iUserID + "'", "Page", iPage.ToString()), connString);
+                if (dt.Rows.Count == 1)
+                {
+                    bool value = (bool)dt.Rows[0]["IsVisited"];
+                    if (value)
+                    {
+                        isVisited = true;
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return isVisited;
         }
 
     }

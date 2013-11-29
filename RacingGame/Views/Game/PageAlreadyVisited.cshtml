@@ -1,0 +1,14 @@
+﻿@{
+    Layout = null;
+}
+
+<META HTTP-EQUIV="Refresh" CONTENT="5;URL=@(Url.Action("StartOver", "Game"))">
+
+@{
+    <head>
+        <title>Page @ViewBag.Page already visited</title>
+    </head>
+        
+    <p>An error has occured, you already visited page @ViewBag.Page, you cannot visit this page again... </p>
+    <p>You will be redirected in 1 second</p>
+}

@@ -1,0 +1,21 @@
+﻿@{
+    Layout = null;
+}
+
+@{
+    using (Html.BeginForm("IDRequiredPost", "Game", FormMethod.Post))
+    {
+        <head>
+        <title>A User Id is required</title>
+        </head>
+        
+        <h3>A User Id is required to participate in the research</h3>
+        <p>An error has occured, a user id is required when entering the site, please provide a user id and try again.</p>
+        @Html.TextBox("txtbxUserID", "");
+        
+        <input type="submit" value="Submit ID" />
+    }
+    
+    
+    
+}

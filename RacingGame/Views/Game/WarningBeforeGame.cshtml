@@ -1,0 +1,20 @@
+﻿@{
+    Layout = null;
+}
+<link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
+
+            @{using (Html.BeginForm("WarningBeforeGamePost", "Game", new RouteValueDictionary { 
+        { "id", ViewData["UserID"] } }, FormMethod.Post))
+              {
+                  <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
+                <h3><u><font color="red"> Warning! </font></u></h3>                                    
+
+                <p>You cannot go back and forth while in play, any such attempt will cause the game to start over.</p>
+                <p>Please press "Next" to start the game.</p>
+                <input type="submit" value="Next" />
+            </div>      
+              }
+                
+            }
+
+            

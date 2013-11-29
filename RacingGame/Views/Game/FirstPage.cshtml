@@ -15,7 +15,8 @@
     <div>
         <h3>Driving Game Research Study</h3>
         
-        @using (Html.BeginForm("FirstPage", "Game", FormMethod.Post))
+        @{using (Html.BeginForm("FirstPage", "Game",  new RouteValueDictionary { 
+                                                     { "id", ViewData["UserID"] } }, FormMethod.Post))
         {
             <p>Hello! I am a researcher from a large university and I am conducting a marketing research survey about using toll roads. In this research, I am interested in knowing how much are people willing to pay in order to use toll roads. To explore that question, I will ask you to play a simple game. In this game, you need to complete a journey of 100 miles that is divided to ten sections of 10 miles each. Your general objective is to complete the entire 100 miles journey in the minimal time possible, while spending the least amount of money.</p>
 
@@ -36,6 +37,7 @@
             <p><font color="red">@ViewBag.ErrorMessage</font></p>
         
             <input type="submit" value="Submit Answer"  />
+        }
         }
     </div>
 </body>

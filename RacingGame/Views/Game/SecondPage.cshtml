@@ -15,7 +15,8 @@
     <div>
         <h3>Driving Game Research Study</h3>
         
-        @using (Html.BeginForm("SecondPage", "Game", FormMethod.Post))
+        @using (Html.BeginForm("SecondPage", "Game",  new RouteValueDictionary { 
+        { "id", ViewData["UserID"] } }, FormMethod.Post))
         {
             <p>When we start the game, you will go through 10 sections of 10 miles each. In each of the 10 miles section, you will have two possible routes from which to choose. One route is a regular freeway and the other route is a paid toll road. We will tell you at what speed you will drive on each route, if you choose it. The speed of the toll road will always be faster than that of the regular freeway, but the specific speeds of each road will be different in each section.</p>
  

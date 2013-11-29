@@ -2,7 +2,8 @@
     Layout = null;
 }
 <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
-@using (Html.BeginForm("Bid", "Game", FormMethod.Get))
+@using (Html.BeginForm("BidResultPost", "Game", new RouteValueDictionary { 
+                                                     { "id", ViewData["UserID"] }, {"pagenumber", ViewData["PageNumber"]} }, FormMethod.Post))
 {
     <div style="text-align: center;" >
         <div style="margin: 0 auto;width:40% ; text-align: right">

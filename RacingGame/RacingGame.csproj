@@ -64,8 +64,9 @@
     </PublishDatabaseSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SQLServerCommon">
-      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+    <Reference Include="SQLServerCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Projects\GitHub\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
@@ -124,6 +125,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Classes\CacheControlAttribute.cs" />
+    <Compile Include="Classes\NoCacheAttribute.cs" />
     <Compile Include="Controllers\GameController.cs" />
     <Compile Include="Controllers\GamerController.cs" />
     <Compile Include="Global.asax.cs">
@@ -241,6 +243,9 @@
     <Content Include="Views\Game\FirstPage.cshtml" />
     <Content Include="Views\Game\SecondPage.cshtml" />
     <Content Include="Views\Game\AfterEndGame.cshtml" />
+    <Content Include="Views\Game\WarningBeforeGame.cshtml" />
+    <Content Include="Views\Game\PageAlreadyVisited.cshtml" />
+    <Content Include="Views\Game\IDRequired.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
