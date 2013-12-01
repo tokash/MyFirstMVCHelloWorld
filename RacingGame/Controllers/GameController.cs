@@ -14,15 +14,15 @@ namespace RacingGame.Controllers
     public class GameController : Controller
     {
 
-        private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User Id=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         //private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
 
         //
         // GET: /Game/
 
-        private static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , Page int NOT NULL, IsVisited BIT NOT NULL)";
-        private static readonly string[] siteStateTableColumns = { "UserID", "Page", "IsVisited" };
+        private static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , PageNumber int NOT NULL, PageName varchar(30) NOT NULL, IsVisited BIT NOT NULL)";
+        private static readonly string[] siteStateTableColumns = { "UserID", "PageNumber", "PageName", "IsVisited" };
 
         public ActionResult FirstPage(string id)
         {
@@ -140,19 +140,20 @@ namespace RacingGame.Controllers
 
             Session["Game"] = game;
 
-            return RedirectToAction("Bid", new { id = id, pagenumber = 1 });
+            return RedirectToAction("Bid", new { id = id, pagenumber = 1, pagename = "Bid" });
         }
 
-        public ActionResult Bid(string id, int? pagenumber)
+        public ActionResult Bid(string id, int? pagenumber, string pagename)
         {
             RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
 
-            if (!IsVisitedPage(id, (int)pagenumber))
+            if (!IsVisitedPage(id, (int)pagenumber, pagename))
             {
                 ViewData["UserID"] = id;
                 ViewData["PageNumber"] = pagenumber;
+                ViewData["PageName"] = pagename;
 
-                AddStateRecordToDB(id, (int)pagenumber, true);
+                AddStateRecordToDB(id, (int)pagenumber, pagename, true);
 
                 ViewBag.Account = game.Account;
                 //ViewBag.TimeLeft = game.TimeLeft;
@@ -175,11 +176,12 @@ namespace RacingGame.Controllers
         }
 
         [HttpPost]
-        public ActionResult Bid(string id, int? pagenumber, BidClass model)
+        public ActionResult Bid(string id, int? pagenumber, string pagename, BidClass model)
         {
             RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
             ViewData["UserID"] = id;
             ViewData["PageNumber"] = pagenumber;
+            ViewData["PageName"] = pagename;
 
             //if (!IsVisitedPage(id, game.CurrentSection))
             //{
@@ -205,7 +207,7 @@ namespace RacingGame.Controllers
                 else
                 {
                     TempData["BidModel"] = model;
-                    return RedirectToAction("BidResult", new { id = id, pagenumber = pagenumber});
+                    return RedirectToAction("BidResult", new { id = id, pagenumber = pagenumber, pagename = "BidResult"});
                 } 
             //}
             //else
@@ -218,7 +220,7 @@ namespace RacingGame.Controllers
             
         }
 
-        public ActionResult BidResult(string id, int? pagenumber)
+        public ActionResult BidResult(string id, int? pagenumber, string pagename)
         {
             RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
             double sectionCoverageTime = 0;
@@ -228,138 +230,148 @@ namespace RacingGame.Controllers
             ViewData["PageNumber"] = pagenumber + 1;
             BidClass model = (BidClass)TempData["BidModel"];
 
-            //Need to calculte a randome number and compare it to the gamer bid
-            int userBid = model.Bid;
-            ViewBag.UserBid = userBid;
-
-            int randomCost = RandomNumberGenerator.Next();
-            ViewBag.RandomTollCost = randomCost;
-
-            if (userBid < randomCost)
+            if (!IsVisitedPage(id, (int)pagenumber, pagename))
             {
-                //go by free way
-                //reduce time by the following calculation :
-                //time passed = section_length / freeway_speed;
-                //new time left = old time - time passed
-                sectionCoverageTime = Math.Round((10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityFreeway) * 60, 2);
+                AddStateRecordToDB(id, (int)pagenumber, pagename, true);
+                //Need to calculte a randome number and compare it to the gamer bid
+                int userBid = model.Bid;
+                ViewBag.UserBid = userBid;
 
-                //account stays the same
-            }
-            else
-            {
-                //go by highway
-                //reduce time by the following calculation :
-                //time passed = section_length / highway_speed;
-                //new time left = old time - time passed
-                //account = old_account - highway cost
+                int randomCost = RandomNumberGenerator.Next();
+                ViewBag.RandomTollCost = randomCost;
 
-                sectionCoverageTime = Math.Round((10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityHighway) * 60, 2);
-
-                //calculating time saved
-                //time to drive on freeway = 10 / game.SpeedSet[game.CurrentSection - 1].VelocityFreeway
-                double freewayTime = Math.Round((double)(10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityFreeway) * 60, 2);
-
-                //time to drive on highway = 10 / game.SpeedSet[game.CurrentSection - 1].VelocityHighway
-                double highwayTime = Math.Round((double)((10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityHighway) * 60), 2);
-                timeSaved = freewayTime - highwayTime;
-
-                game.TimeSaved += timeSaved;
-                game.Account = game.Account - randomCost;
-            }
-
-            game.TimePassed += sectionCoverageTime;
-            ViewBag.SectionCoverageTime = sectionCoverageTime;
-            ViewBag.FreewaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway;
-            ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
-            ViewBag.Account = game.Account;
-            ViewBag.CurrentSection = game.CurrentSection;
-            ViewBag.RoadSections = game.RoadSections;
-
-            Session["Game"] = game;
-            //string userID = (string)Session["UserID"];
-
-            game.GamePlays.Add(new GamePlay()
-            {
-                UserID = id,
-                Section = game.CurrentSection,
-                FreewayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
-                TollwayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
-                PriceSubject = userBid,
-                PriceRandom = randomCost,
-                CurrentAccount = game.Account,
-                TimeSaved = timeSaved
-            });
-
-            #region Write play to DB every play
-            Game.AddRecordToDB(id,
-                               game.CurrentSection,
-                               game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
-                               game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
-                               userBid,
-                               randomCost,
-                               game.Account,
-                               timeSaved); 
-            #endregion
-
-            game.CurrentSection++;
-
-            if (game.CurrentSection <= game.RoadSections && game.Account > 0)
-            {
-                //Go to Bid page
-                result = View();
-            }
-            else
-            {
-                //Go to game end;
-                if (game.Account <= 0)
+                if (userBid < randomCost)
                 {
-                    //in this case, the game ended because the user lost all money
-                    //need to calculate how long it took the user to ride by the freeway
+                    //go by free way
+                    //reduce time by the following calculation :
+                    //time passed = section_length / freeway_speed;
+                    //new time left = old time - time passed
+                    sectionCoverageTime = Math.Round((10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityFreeway) * 60, 2);
 
-                    double time = 0;
-                    int currentSection = game.CurrentSection + 1;
-
-                    if (currentSection < game.GameSections)
-                    {
-                        while (currentSection < game.RoadSections)
-                        {
-                            time += 10 / game.SpeedSet[currentSection - 1].VelocityFreeway;
-                            currentSection++;
-                        } 
-                    }
-
-                    game.TimePassed += time;
-                }
-
-                ViewBag.MoneySaved = game.Account;
-                ViewBag.MoneySpent = game.StartingAccount - game.Account;
-                ViewBag.Sections = game.GameSections;
-                ViewBag.StartingAccount = game.StartingAccount;
-                ViewBag.StartingTime = game.StartingTime;
-                @ViewBag.TimeSaved = game.TimeSaved;
-
-                double moneyTimeRatio = 0;
-                if (game.StartingAccount - game.Account > 0)
-                {
-                    moneyTimeRatio = Math.Round(game.TimeSaved / (game.StartingAccount - game.Account), 2);
+                    //account stays the same
                 }
                 else
                 {
-                    moneyTimeRatio = Math.Round(game.TimeSaved / (game.StartingAccount), 2);
+                    //go by highway
+                    //reduce time by the following calculation :
+                    //time passed = section_length / highway_speed;
+                    //new time left = old time - time passed
+                    //account = old_account - highway cost
+
+                    sectionCoverageTime = Math.Round((10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityHighway) * 60, 2);
+
+                    //calculating time saved
+                    //time to drive on freeway = 10 / game.SpeedSet[game.CurrentSection - 1].VelocityFreeway
+                    double freewayTime = Math.Round((double)(10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityFreeway) * 60, 2);
+
+                    //time to drive on highway = 10 / game.SpeedSet[game.CurrentSection - 1].VelocityHighway
+                    double highwayTime = Math.Round((double)((10.0 / game.SpeedSet[game.CurrentSection - 1].VelocityHighway) * 60), 2);
+                    timeSaved = freewayTime - highwayTime;
+
+                    game.TimeSaved += timeSaved;
+                    game.Account = game.Account - randomCost;
                 }
 
-                ViewBag.MoneyTimeRatio = moneyTimeRatio;
-                ViewBag.Bonus = moneyTimeRatio * 0.5;
-                ViewBag.Code = game.GenerateGUID();
+                game.TimePassed += sectionCoverageTime;
+                ViewBag.SectionCoverageTime = sectionCoverageTime;
+                ViewBag.FreewaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway;
+                ViewBag.HighwaySpeed = game.SpeedSet[game.CurrentSection - 1].VelocityHighway;
+                ViewBag.Account = game.Account;
+                ViewBag.CurrentSection = game.CurrentSection;
+                ViewBag.RoadSections = game.RoadSections;
 
-                //write game results to DB
-                //foreach (GamePlay play in game.GamePlays)
-                //{
-                //    Game.AddRecordToDB(play);
-                //}
+                Session["Game"] = game;
+                //string userID = (string)Session["UserID"];
+
+                game.GamePlays.Add(new GamePlay()
+                {
+                    UserID = id,
+                    Section = game.CurrentSection,
+                    FreewayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
+                    TollwayVelocity = game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
+                    PriceSubject = userBid,
+                    PriceRandom = randomCost,
+                    CurrentAccount = game.Account,
+                    TimeSaved = timeSaved
+                });
+
+                #region Write play to DB every play
+                Game.AddRecordToDB(id,
+                                   game.CurrentSection,
+                                   game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
+                                   game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
+                                   userBid,
+                                   randomCost,
+                                   game.Account,
+                                   timeSaved); 
+                #endregion
+
+                game.CurrentSection++;
+
+                if (game.CurrentSection <= game.RoadSections && game.Account > 0)
+                {
+                    //Go to Bid page
+                    result = View();
+                }
+                else
+                {
+                    //Go to game end;
+                    if (game.Account <= 0)
+                    {
+                        //in this case, the game ended because the user lost all money
+                        //need to calculate how long it took the user to ride by the freeway
+
+                        double time = 0;
+                        int currentSection = game.CurrentSection + 1;
+
+                        if (currentSection < game.GameSections)
+                        {
+                            while (currentSection < game.RoadSections)
+                            {
+                                time += 10 / game.SpeedSet[currentSection - 1].VelocityFreeway;
+                                currentSection++;
+                            } 
+                        }
+
+                        game.TimePassed += time;
+                    }
+
+                    ViewBag.MoneySaved = game.Account;
+                    ViewBag.MoneySpent = game.StartingAccount - game.Account;
+                    ViewBag.Sections = game.GameSections;
+                    ViewBag.StartingAccount = game.StartingAccount;
+                    ViewBag.StartingTime = game.StartingTime;
+                    @ViewBag.TimeSaved = game.TimeSaved;
+
+                    double moneyTimeRatio = 0;
+                    if (game.StartingAccount - game.Account > 0)
+                    {
+                        moneyTimeRatio = Math.Round(game.TimeSaved / (game.StartingAccount - game.Account), 2);
+                    }
+                    else
+                    {
+                        moneyTimeRatio = Math.Round(game.TimeSaved / (game.StartingAccount), 2);
+                    }
+
+                    ViewBag.MoneyTimeRatio = moneyTimeRatio;
+                    ViewBag.Bonus = moneyTimeRatio * 0.5;
+                    ViewBag.Code = game.GenerateGUID();
+
+                    //write game results to DB
+                    //foreach (GamePlay play in game.GamePlays)
+                    //{
+                    //    Game.AddRecordToDB(play);
+                    //}
 
 
-                result = View("GameEnd");
+                    result = View("GameEnd");
+                }
+            }
+            else
+            {
+                return RedirectToAction("PageAlreadyVisited",
+                                        new { id = id, pagenumber = pagenumber }
+                                       );
             }
 
             return result;
@@ -368,23 +380,27 @@ namespace RacingGame.Controllers
         [HttpPost]
         public ActionResult BidResultPost(string id, int? pagenumber)
         {
-            return RedirectToAction("Bid", new { id = id, pagenumber = pagenumber });
+            return RedirectToAction("Bid", new { id = id, pagenumber = pagenumber, pagename = "Bid" });
         }
 
-        public ActionResult AfterEndGame()
+        public ActionResult AfterEndGame(string id)
         {
+            ViewData["UserID"] = id;
+
             return View();
         }
 
         [HttpPost]
-        public ActionResult AfterEndGamePost()
+        public ActionResult AfterEndGamePost(string id)
         {
             string comments = Request.Form["txtbxComments"];
 
             if (comments != null && comments != string.Empty)
             {
-                //write to db
+                //write comments to db
             }
+
+            ClearUserStateDataFromDB(id, "SiteState", "");
 
             return Redirect("http://www.google.com");
         }
@@ -431,27 +447,29 @@ namespace RacingGame.Controllers
         }
 
         private void AddStateRecordToDB(string iUserID,
-                                         int iPage,
+                                         int iPageNumber,
+                                         string iPageName,
                                          bool iIsVisited)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
             parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), iUserID);
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPage.ToString());
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPageNumber.ToString());
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), iPageName.ToString());
 
             if (iIsVisited == true)
             {
-                parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), "1");
+                parameters.Add(String.Format("@{0}", siteStateTableColumns[3]), "1");
             }
             else
             {
-                parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), "1");
+                parameters.Add(String.Format("@{0}", siteStateTableColumns[3]), "0");
             }
 
 
             try
             {
-                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4};", "SiteState", "UserID", "'" + iUserID + "'", "Page", iPage), connString);
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber, "PageName", "'" + iPageName + "'"), connString);
                 if (dt.Rows.Count == 0)
                 {
                     SQLServerCommon.SQLServerCommon.Insert("siteState", connString, siteStateTableColumns, parameters);
@@ -484,17 +502,18 @@ namespace RacingGame.Controllers
             SQLServerCommon.SQLServerCommon.Delete(iTableName, connString, iWhereClause);
         }
 
-        private bool IsVisitedPage(string iUserID, int iPage)
+        private bool IsVisitedPage(string iUserID, int iPageNumber, string iPageName)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             bool isVisited = false;
 
             parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), iUserID);
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPage.ToString());
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPageNumber.ToString());
+            parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), iPageName);
 
             try
             {
-                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4};", "SiteState", "UserID", "'" + iUserID + "'", "Page", iPage.ToString()), connString);
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber.ToString(), "PageName", "'" + iPageName + "'"), connString);
                 if (dt.Rows.Count == 1)
                 {
                     bool value = (bool)dt.Rows[0]["IsVisited"];

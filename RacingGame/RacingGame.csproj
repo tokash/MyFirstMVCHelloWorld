@@ -66,7 +66,7 @@
   <ItemGroup>
     <Reference Include="SQLServerCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Projects\GitHub\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />

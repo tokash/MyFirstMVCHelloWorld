@@ -3,7 +3,10 @@
 }
 <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
 
-            @{using (Html.BeginForm("AfterEndGamePost", "Game", FormMethod.Post))
+            @{using (Html.BeginForm("AfterEndGamePost", "Game",
+                                                     new RouteValueDictionary { 
+                                                     { "id", ViewData["UserID"] }},
+                                                     FormMethod.Post))
               {
                   <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
                                     
