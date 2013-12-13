@@ -12,8 +12,8 @@ namespace RacingGame.Models
 
     public class Game
     {
-        private static readonly string connStringInitial = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
-        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        internal static readonly string connStringInitial = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
+        internal static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         private static readonly string dbName = "RaceGameDB";//"GameRaceDB";
         //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
@@ -28,11 +28,20 @@ namespace RacingGame.Models
                 "MAXSIZE = 100MB, " +
                 "FILEGROWTH = 10%)";
 
-        private static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(30) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeSavedForSection real NOT NULL , PRIMARY KEY (ID))";
-        private static readonly string[] GamePlaysTableColumns = {"UserID", "Section", "VelocityFreeway", "VelocityTollway", "PriceSubject", "PriceRandom", "Account", "TimeSavedForSection" };
-        
-        private static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , PageNumber int NOT NULL, PageName varchar(30) NOT NULL, IsVisited BIT NOT NULL)";
-        private static readonly string[] siteStateTableColumns = { "UserID", "PageNumber", "PageName", "IsVisited" };
+        internal static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(30) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeSavedForSection real NOT NULL , PRIMARY KEY (ID))";
+        internal static readonly string[] GamePlaysTableColumns = { "UserID", "Section", "VelocityFreeway", "VelocityTollway", "PriceSubject", "PriceRandom", "Account", "TimeSavedForSection" };
+
+        internal static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , PageNumber int NOT NULL, PageName varchar(30) NOT NULL, IsVisited BIT NOT NULL)";
+        internal static readonly string[] siteStateTableColumns = { "UserID", "PageNumber", "PageName", "IsVisited" };
+
+        internal static readonly string commentsTableSchema = "CREATE TABLE Comments (UserID varchar(30) NOT NULL , Comments varchar(4000) NOT NULL, ConfirmationCode varchar(8) NOT NULL)";
+        internal static readonly string[] commentsTableColumns = { "UserID", "Comments", "ConfirmationCode" };
+
+        private static readonly string[] tableNames = { "GamePlays", "SiteState", "Comments" };
+        private static readonly string[] tableSchemas = { "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(30) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeSavedForSection real NOT NULL , PRIMARY KEY (ID))",
+                                                          "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , PageNumber int NOT NULL, PageName varchar(30) NOT NULL, IsVisited BIT NOT NULL)",
+                                                          "CREATE TABLE Comments (UserID varchar(30) NOT NULL , Comments varchar(4000) NOT NULL, ConfirmationCode varchar(8) NOT NULL)" };
+        internal static readonly int maxCharactersinComment = 4000;
 
         public Game(string iName = "Racing Game")
         {
@@ -195,7 +204,7 @@ namespace RacingGame.Models
             _SpeedSet.Shuffle();
         }
 
-        public string GenerateGUID()
+        public static string GenerateGUID()
         {
             var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var random = new Random();
@@ -219,6 +228,20 @@ namespace RacingGame.Models
                     //Create tables upon DB creation
                     SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, connString);
                     SQLServerCommon.SQLServerCommon.ExecuteNonQuery(siteStateTableSchema, connString);
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(commentsTableSchema, connString);
+                }
+                else
+                {
+                    //Check if all tables exist, if not, create them
+                    int i = 0;
+                    foreach (string tableName in tableNames)
+                    {
+                        if (SQLServerCommon.SQLServerCommon.IsTableExists(connString, dbName, tableName) == false)
+                        {
+                            SQLServerCommon.SQLServerCommon.ExecuteNonQuery(tableSchemas[i], connString);
+                        }
+                        i++;
+                    }
                 }
 
                 ////LocalDB = "RaceGameDB"

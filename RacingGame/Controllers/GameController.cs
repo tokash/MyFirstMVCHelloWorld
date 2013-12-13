@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using RacingGame.Classes;
@@ -14,44 +12,47 @@ namespace RacingGame.Controllers
     public class GameController : Controller
     {
 
-        private static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        //private static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User Id=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         //private static readonly string connString = "workstation id=RaceGameDB.mssql.somee.com;packet size=4096;user id=tokash_SQLLogin_1;pwd=vahzmb1why;data source=RaceGameDB.mssql.somee.com;persist security info=False;initial catalog=RaceGameDB";
 
         //
         // GET: /Game/
 
-        private static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , PageNumber int NOT NULL, PageName varchar(30) NOT NULL, IsVisited BIT NOT NULL)";
-        private static readonly string[] siteStateTableColumns = { "UserID", "PageNumber", "PageName", "IsVisited" };
+        //private static readonly string siteStateTableSchema = "CREATE TABLE SiteState (UserID varchar(30) NOT NULL , PageNumber int NOT NULL, PageName varchar(30) NOT NULL, IsVisited BIT NOT NULL)";
+        //private static readonly string[] siteStateTableColumns = { "UserID", "PageNumber", "PageName", "IsVisited" };
+
+        
 
         public ActionResult FirstPage(string id)
         {
             //Data to pass through the game life cycle:
             //Randomized speeds array
-            //Session.Timeout = 10;
+            Session.Timeout = 60;
 
-            if (id != null && id != "")
+            Session["Game"] = new RacingGame.Models.Game();
+
+            if (id == null || id == string.Empty)
             {
-                Session["Game"] = new RacingGame.Models.Game();
-                ViewData["UserID"] = id;
-                //Session["UserID"] = Game.GenerateUniqueID();
-                Question q = new Question()
-                {
-                    CorrectAnswer = "If I save 60 minutes and spend $50",
-                    AnswerA = "If I save 50 minutes and spend $100+",
-                    AnswerB = "If I save 60 minutes and spend $100",
-                    AnswerC = "If I save 50 minutes and spend $50",
-                    AnswerD = "If I save 60 minutes and spend $50",
-                    ErrorMessage = "Your answer is incorrect.  Please read the instructions and try again."
-                };
-                Session["Question1"] = q;
-
-                return View(); 
+                ViewData["UserID"] = Game.GenerateUniqueID();
             }
             else
             {
-                return RedirectToAction("IDRequired");
+                ViewData["UserID"] = id;
             }
+
+            Question q = new Question()
+            {
+                CorrectAnswer = "If I save 60 minutes and spend $50",
+                AnswerA = "If I save 50 minutes and spend $100+",
+                AnswerB = "If I save 60 minutes and spend $100",
+                AnswerC = "If I save 50 minutes and spend $50",
+                AnswerD = "If I save 60 minutes and spend $50",
+                ErrorMessage = "Your answer is incorrect.  Please read the instructions and try again."
+            };
+            Session["Question1"] = q;
+
+            return View(); 
         }
 
         [HttpPost]
@@ -120,6 +121,13 @@ namespace RacingGame.Controllers
 
         public ActionResult WarningBeforeGame(string id)
         {
+            //this is the case where the user was redirected after cheating
+            //creating new 
+            if (Session["Game"] == null)
+            {
+                Session["Game"] = new RacingGame.Models.Game();
+            }
+
             ViewData["UserID"] = id;
             return View();
         }
@@ -233,7 +241,7 @@ namespace RacingGame.Controllers
             if (!IsVisitedPage(id, (int)pagenumber, pagename))
             {
                 AddStateRecordToDB(id, (int)pagenumber, pagename, true);
-                //Need to calculte a randome number and compare it to the gamer bid
+                //Need to calculte a random number and compare it to the gamer bid
                 int userBid = model.Bid;
                 ViewBag.UserBid = userBid;
 
@@ -355,14 +363,6 @@ namespace RacingGame.Controllers
 
                     ViewBag.MoneyTimeRatio = moneyTimeRatio;
                     ViewBag.Bonus = moneyTimeRatio * 0.5;
-                    ViewBag.Code = game.GenerateGUID();
-
-                    //write game results to DB
-                    //foreach (GamePlay play in game.GamePlays)
-                    //{
-                    //    Game.AddRecordToDB(play);
-                    //}
-
 
                     result = View("GameEnd");
                 }
@@ -386,23 +386,25 @@ namespace RacingGame.Controllers
         public ActionResult AfterEndGame(string id)
         {
             ViewData["UserID"] = id;
+            ViewBag.Code = Game.GenerateGUID();
 
             return View();
         }
 
         [HttpPost]
-        public ActionResult AfterEndGamePost(string id)
+        public ActionResult AfterEndGamePost(string id, string confirmationcode)
         {
             string comments = Request.Form["txtbxComments"];
 
             if (comments != null && comments != string.Empty)
             {
                 //write comments to db
+                AddCommentsRecordToDB(id, comments, confirmationcode);
             }
 
             ClearUserStateDataFromDB(id, "SiteState", "");
 
-            return Redirect("http://www.google.com");
+            return RedirectToAction("AfterSubmitComments");
         }
 
         public ActionResult PageAlreadyVisited(string id, int? pagenumber)
@@ -411,6 +413,9 @@ namespace RacingGame.Controllers
             {
                 ViewBag.Page = pagenumber;
             }
+
+            ViewData["UserID"] = id;
+
             return View();
         }
 
@@ -418,8 +423,8 @@ namespace RacingGame.Controllers
         {
             ClearUserStateDataFromDB(id, "siteState", "");
             Session.Abandon();
-            return RedirectToAction("FirstPage",
-                                        new RouteValueDictionary(new { controller = "Game", action = "FirstPage", Id = id})
+            return RedirectToAction("WarningBeforeGame",
+                                        new RouteValueDictionary(new { controller = "Game", action = "WarningBeforeGame", Id = id })
                                        );
         }
 
@@ -446,6 +451,11 @@ namespace RacingGame.Controllers
             
         }
 
+        public ActionResult AfterSubmitComments()
+        {
+            return View();
+        }
+
         private void AddStateRecordToDB(string iUserID,
                                          int iPageNumber,
                                          string iPageName,
@@ -453,26 +463,26 @@ namespace RacingGame.Controllers
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), iUserID);
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPageNumber.ToString());
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), iPageName.ToString());
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[1]), iPageNumber.ToString());
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[2]), iPageName.ToString());
 
             if (iIsVisited == true)
             {
-                parameters.Add(String.Format("@{0}", siteStateTableColumns[3]), "1");
+                parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[3]), "1");
             }
             else
             {
-                parameters.Add(String.Format("@{0}", siteStateTableColumns[3]), "0");
+                parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[3]), "0");
             }
 
 
             try
             {
-                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber, "PageName", "'" + iPageName + "'"), connString);
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber, "PageName", "'" + iPageName + "'"), Game.connString);
                 if (dt.Rows.Count == 0)
                 {
-                    SQLServerCommon.SQLServerCommon.Insert("siteState", connString, siteStateTableColumns, parameters);
+                    SQLServerCommon.SQLServerCommon.Insert("siteState", Game.connString, Game.siteStateTableColumns, parameters);
                 }
                 else
                 {
@@ -485,7 +495,7 @@ namespace RacingGame.Controllers
                         if (value != iIsVisited)
                         {
                             //we need to update the value
-                            SQLServerCommon.SQLServerCommon.Update("siteState", connString, siteStateTableColumns, parameters);
+                            SQLServerCommon.SQLServerCommon.Update("siteState", Game.connString, Game.siteStateTableColumns, parameters);
                         }
                     }
                 }
@@ -497,9 +507,49 @@ namespace RacingGame.Controllers
             }
         }
 
+        private void AddCommentsRecordToDB(string iUserID,
+                                         string iComment, 
+                                         string iConfirmationCode)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            string comment = string.Empty;
+
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[0]), iUserID);
+            
+            if (iComment.Length > Game.maxCharactersinComment)
+            {
+                comment = iComment.Substring(0, Game.maxCharactersinComment);
+            }
+            else
+            {
+                comment = iComment;
+            }
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[1]), comment);
+
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[2]), iConfirmationCode);
+
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2};", "Comments", "UserID", "'" + iUserID + "'"), Game.connString);
+                if (dt.Rows.Count == 0)
+                {
+                    SQLServerCommon.SQLServerCommon.Insert("comments", Game.connString, Game.commentsTableColumns, parameters);
+                }
+                else
+                {
+                    //do nothing - user may leave a comment only once
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
         private static void ClearUserStateDataFromDB(string iUserID, string iTableName, string iWhereClause)
         {
-            SQLServerCommon.SQLServerCommon.Delete(iTableName, connString, iWhereClause);
+            SQLServerCommon.SQLServerCommon.Delete(iTableName, Game.connString, iWhereClause);
         }
 
         private bool IsVisitedPage(string iUserID, int iPageNumber, string iPageName)
@@ -507,13 +557,13 @@ namespace RacingGame.Controllers
             Dictionary<string, string> parameters = new Dictionary<string, string>();
             bool isVisited = false;
 
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[0]), iUserID);
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[1]), iPageNumber.ToString());
-            parameters.Add(String.Format("@{0}", siteStateTableColumns[2]), iPageName);
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[1]), iPageNumber.ToString());
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[2]), iPageName);
 
             try
             {
-                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber.ToString(), "PageName", "'" + iPageName + "'"), connString);
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber.ToString(), "PageName", "'" + iPageName + "'"), Game.connString);
                 if (dt.Rows.Count == 1)
                 {
                     bool value = (bool)dt.Rows[0]["IsVisited"];

@@ -5,7 +5,9 @@
 
             @{using (Html.BeginForm("AfterEndGamePost", "Game",
                                                      new RouteValueDictionary { 
-                                                     { "id", ViewData["UserID"] }},
+                                                     { "id", ViewData["UserID"] },
+                                                     {"confirmationcode", ViewBag.Code}
+                                                     },
                                                      FormMethod.Post))
               {
                   <div style="width: 40%;height:80%; margin: 0 auto; text-align: left">
@@ -14,7 +16,9 @@
                 <p>@Html.TextArea("txtbxComments", "", 10, 50, null)</p>
 
                 <p>Thank you very much for taking part in our research!</p>
-                      
+                <p>To receive your payment and bonus, you must copy and paste the confirmation code below back to MTurk. </p>
+                <p>Confirmation code: @ViewBag.Code</p>
+
                 <p>If you have any questions, complaints or suggestions about this research, you may contact the principal investigator, Dr. Eyal Peer from Bar-Ilan University, at eyal.peer@biu.ac.il. </p>
 
                 <p>Please click on “End” to submit your responses.</p>

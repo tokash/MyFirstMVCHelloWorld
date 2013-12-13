@@ -66,7 +66,7 @@
   <ItemGroup>
     <Reference Include="SQLServerCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+      <HintPath>D:\Projects\GitHub\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
@@ -246,6 +246,7 @@
     <Content Include="Views\Game\WarningBeforeGame.cshtml" />
     <Content Include="Views\Game\PageAlreadyVisited.cshtml" />
     <Content Include="Views\Game\IDRequired.cshtml" />
+    <Content Include="Views\Game\AfterSubmitComments.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

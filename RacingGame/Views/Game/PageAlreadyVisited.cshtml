@@ -2,7 +2,8 @@
     Layout = null;
 }
 
-<META HTTP-EQUIV="Refresh" CONTENT="5;URL=@(Url.Action("StartOver", "Game"))">
+<META HTTP-EQUIV="Refresh" CONTENT="5;URL=@(Url.Action("StartOver", "Game", new RouteValueDictionary { 
+                                                     { "id", ViewData["UserID"] }}))">
 
 @{
     <head>
@@ -10,5 +11,5 @@
     </head>
         
     <p>An error has occured, you already visited page @ViewBag.Page, you cannot visit this page again... </p>
-    <p>You will be redirected in 1 second</p>
+    <p>You will be redirected in 1 second.</p>
 }

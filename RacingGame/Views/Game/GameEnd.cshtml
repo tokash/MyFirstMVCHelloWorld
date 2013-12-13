@@ -13,7 +13,7 @@
                 @{
                     if (ViewBag.MoneySpent < ViewBag.StartingAccount)
                     {
-                        <p>Thank you. You have completed the game. </p>
+                        
 
                         <p>After @ViewBag.Sections sections of 10 miles each, you were able to save a total of @ViewBag.TimeSaved minutes. </p>
                         <p>You spend a total of @ViewBag.MoneySpent dollars on toll roads during the game. </p>
@@ -36,13 +36,9 @@
 
                         <p>Your bonus is this score multiplied by 50 cents, which means you will get @ViewBag.Bonus dollars in bonus.</p>
                     }
+                    
+                    <p>Thank you. You have completed the game. </p>
                 }
-                
-
-                <p>To receive your payment and bonus, you must copy and paste the confirmation code below back to MTurk. </p>
-
-                <p>Confirmation code: @ViewBag.Code</p>
-
 
                 <p>Please click on “Next” to continue.</p>
                 <input type="submit" value="Next" />
