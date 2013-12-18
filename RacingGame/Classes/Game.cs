@@ -12,8 +12,8 @@ namespace RacingGame.Models
 
     public class Game
     {
-        internal static readonly string connStringInitial = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
-        internal static readonly string connString = "Server=TOKASHYO-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
+        //internal static readonly string connStringInitial = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
+        //internal static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         private static readonly string dbName = "RaceGameDB";//"GameRaceDB";
         //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
@@ -21,7 +21,7 @@ namespace RacingGame.Models
         private static readonly string sqlCommandCreateDB = "CREATE DATABASE " + dbName + " ON PRIMARY " +
                 "(NAME = " + dbName + ", " +
                 "FILENAME = 'D:\\" + dbName + ".mdf', " +
-                "SIZE = 2MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
+                "SIZE = 3MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
                 "LOG ON (NAME = " + dbName + "_LOG, " +
                 "FILENAME = 'D:\\" + dbName + ".ldf', " +
                 "SIZE = 1MB, " +
@@ -47,6 +47,8 @@ namespace RacingGame.Models
         {
             _Name = iName;
             _GameData = (NameValueCollection)ConfigurationManager.GetSection("GameConfiguration");
+            _MasterConnectionString = ConfigurationManager.ConnectionStrings["MasterConnection"].ConnectionString;
+            _DefaultConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
             _Account = int.Parse(_GameData["StartingGamerCash"]);
             _StartingAccount = _Account;
@@ -176,6 +178,12 @@ namespace RacingGame.Models
 
         private static int _GameSections;
         public int GameSections { get { return _GameSections; } }
+
+        private string _MasterConnectionString;
+        public string MasterConnectionString { get { return _MasterConnectionString; } }
+
+        private string _DefaultConnectionString;
+        public string DefaultConnectionString { get { return _DefaultConnectionString; } }
         #endregion
 
         private void RandomizeSpeedset()
@@ -221,14 +229,14 @@ namespace RacingGame.Models
             try
             {
                 //Create DB
-                if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connStringInitial, dbName))
+                if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(_MasterConnectionString, dbName))//connStringInitial, dbName))
                 {
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(sqlCommandCreateDB, connStringInitial);
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(sqlCommandCreateDB, _MasterConnectionString);
 
                     //Create tables upon DB creation
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, connString);
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(siteStateTableSchema, connString);
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(commentsTableSchema, connString);
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, _DefaultConnectionString);
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(siteStateTableSchema, _DefaultConnectionString);
+                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(commentsTableSchema, _DefaultConnectionString);
                 }
                 else
                 {
@@ -236,9 +244,9 @@ namespace RacingGame.Models
                     int i = 0;
                     foreach (string tableName in tableNames)
                     {
-                        if (SQLServerCommon.SQLServerCommon.IsTableExists(connString, dbName, tableName) == false)
+                        if (SQLServerCommon.SQLServerCommon.IsTableExists(_DefaultConnectionString, dbName, tableName) == false)
                         {
-                            SQLServerCommon.SQLServerCommon.ExecuteNonQuery(tableSchemas[i], connString);
+                            SQLServerCommon.SQLServerCommon.ExecuteNonQuery(tableSchemas[i], _DefaultConnectionString);
                         }
                         i++;
                     }
@@ -258,7 +266,7 @@ namespace RacingGame.Models
             }
         }
 
-        public static void AddRecordToDB(string iUserID,
+        public void AddRecordToDB(string iUserID,
                                          int iSection,
                                          int iFreewayVelocity,
                                          int iTollwayVelocity,
@@ -286,7 +294,7 @@ namespace RacingGame.Models
                 //DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select 1 from {0} where {1} = {2};", "GamePlays", "ID", "'" + iDrug.Name.Replace("'", "") + "'"), connString);
                 //if (dt.Rows.Count == 0)
                 //{
-                    SQLServerCommon.SQLServerCommon.Insert("GamePlays", connString, GamePlaysTableColumns, parameters);
+                SQLServerCommon.SQLServerCommon.Insert("GamePlays", _DefaultConnectionString, GamePlaysTableColumns, parameters);
                 //}
             }
             catch (Exception)
@@ -296,7 +304,7 @@ namespace RacingGame.Models
             }
         }
 
-        public static void AddRecordToDB(GamePlay iGamePlay)
+        public void AddRecordToDB(GamePlay iGamePlay)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
 
@@ -317,7 +325,7 @@ namespace RacingGame.Models
                 //DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select 1 from {0} where {1} = {2};", "GamePlays", "ID", "'" + iDrug.Name.Replace("'", "") + "'"), connString);
                 //if (dt.Rows.Count == 0)
                 //{
-                SQLServerCommon.SQLServerCommon.Insert("GamePlays", connString, GamePlaysTableColumns, parameters);
+                SQLServerCommon.SQLServerCommon.Insert("GamePlays", _DefaultConnectionString, GamePlaysTableColumns, parameters);
                 //}
             }
             catch (Exception)
@@ -334,6 +342,158 @@ namespace RacingGame.Models
             s = DateTime.Now.ToString("dd.mm.yyyy_hh.mm.ss.fffffff");
 
             return s;
+        }
+
+        public void AddStateRecordToDB(string iUserID,
+                                         int iPageNumber,
+                                         string iPageName,
+                                         bool iIsVisited)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[1]), iPageNumber.ToString());
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[2]), iPageName.ToString());
+
+            if (iIsVisited == true)
+            {
+                parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[3]), "1");
+            }
+            else
+            {
+                parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[3]), "0");
+            }
+
+
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber, "PageName", "'" + iPageName + "'"), _DefaultConnectionString);
+                if (dt.Rows.Count == 0)
+                {
+                    SQLServerCommon.SQLServerCommon.Insert("siteState", _DefaultConnectionString, Game.siteStateTableColumns, parameters);
+                }
+                else
+                {
+                    //this means that the record for the user and page already exists
+                    //need to update current record
+
+                    if (dt.Rows.Count == 1)
+                    {
+                        bool value = (bool)dt.Rows[0]["IsVisited"];
+                        if (value != iIsVisited)
+                        {
+                            //we need to update the value
+                            SQLServerCommon.SQLServerCommon.Update("siteState", _DefaultConnectionString, Game.siteStateTableColumns, parameters);
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void AddCommentsRecordToDB(string iUserID,
+                                         string iComment,
+                                         string iConfirmationCode)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            string comment = string.Empty;
+
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[0]), iUserID);
+
+            if (iComment.Length > Game.maxCharactersinComment)
+            {
+                comment = iComment.Substring(0, Game.maxCharactersinComment);
+            }
+            else
+            {
+                comment = iComment;
+            }
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[1]), comment);
+
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[2]), iConfirmationCode);
+
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2};", "Comments", "UserID", "'" + iUserID + "'"), _DefaultConnectionString);
+                if (dt.Rows.Count == 0)
+                {
+                    SQLServerCommon.SQLServerCommon.Insert("comments", _DefaultConnectionString, Game.commentsTableColumns, parameters);
+                }
+                else
+                {
+                    //do nothing - user may leave a comment only once
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public void ClearUserStateDataFromDB(string iUserID, string iTableName, string iWhereClause)
+        {
+            SQLServerCommon.SQLServerCommon.Delete(iTableName, _DefaultConnectionString, iWhereClause);
+        }
+
+        public bool IsVisitedPage(string iUserID, int iPageNumber, string iPageName)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            bool isVisited = false;
+
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[0]), iUserID);
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[1]), iPageNumber.ToString());
+            parameters.Add(String.Format("@{0}", Game.siteStateTableColumns[2]), iPageName);
+
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2} and {3} = {4} and {5} = {6};", "SiteState", "UserID", "'" + iUserID + "'", "PageNumber", iPageNumber.ToString(), "PageName", "'" + iPageName + "'"), _DefaultConnectionString);
+                if (dt.Rows.Count == 1)
+                {
+                    bool value = (bool)dt.Rows[0]["IsVisited"];
+                    if (value)
+                    {
+                        isVisited = true;
+                    }
+
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return isVisited;
+        }
+
+        public bool IsGuidGeneratedForUser(string iUserID, ref string oGUID)
+        {
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+            bool isGuidGenerated = false;
+
+            parameters.Add(String.Format("@{0}", Game.commentsTableColumns[0]), iUserID);
+            
+            try
+            {
+                DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2};", "Comments", "UserID", "'" + iUserID + "'"), _DefaultConnectionString);
+                if (dt.Rows.Count > 0)
+                {
+                    isGuidGenerated = true;
+                    oGUID = (string)dt.Rows[0]["ConfirmationCode"];
+                }
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            return isGuidGenerated;
         }
     }
 }

@@ -53,10 +53,10 @@
     <PackageAsSingleFile>false</PackageAsSingleFile>
     <PublishDatabaseSettings>
       <Objects>
-        <ObjectGroup Name="DefaultConnection-Deployment" Order="1">
-          <Destination Path="" />
+        <ObjectGroup Name="DefaultConnection-Deployment" Order="1" xmlns="">
+          <Destination Path="Data Source=TOKASHYOS-PC%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" />
           <Object Type="DbFullSql">
-            <PreSource Path="Server=TOKASHYO-PC\\SQLEXPRESS%3bUser Id=sa%3bPassword=tokash30%3bdatabase=RaceGameDB" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <PreSource Path="Data Source=TOKASHYOS-PC\SQLEXPRESS%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
             <Source Path="obj\Release\AutoScripts\DefaultConnection-Deployment_SchemaOnly.sql" Transacted="True" />
           </Object>
         </ObjectGroup>
@@ -66,7 +66,7 @@
   <ItemGroup>
     <Reference Include="SQLServerCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>D:\Projects\GitHub\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
+      <HintPath>..\..\SQLServerCommon\SQLServerCommon\bin\Debug\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
@@ -197,6 +197,7 @@
     <Content Include="Content\themes\base\minified\jquery.ui.theme.min.css" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\RaceGame.pubxml" />
     <None Include="Properties\PublishProfiles\RacingGameStaging - FTP %282%29.pubxml" />
     <None Include="Properties\PublishProfiles\RacingGameStaging - FTP.pubxml" />
@@ -221,6 +222,7 @@
     </Content>
     <Content Include="Web.Release.config">
       <DependentUpon>Web.config</DependentUpon>
+      <SubType>Designer</SubType>
     </Content>
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />
