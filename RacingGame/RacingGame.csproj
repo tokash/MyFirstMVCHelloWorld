@@ -127,7 +127,6 @@
     <Compile Include="Classes\CacheControlAttribute.cs" />
     <Compile Include="Classes\NoCacheAttribute.cs" />
     <Compile Include="Controllers\GameController.cs" />
-    <Compile Include="Controllers\GamerController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

@@ -77,6 +77,7 @@ namespace RacingGame.Controllers
             else
             {
                 RacingGame.Models.Game game = (RacingGame.Models.Game)Session["Game"];
+
                 ViewBag.Account = game.Account;
                 //ViewBag.TimeLeft = game.TimeLeft;
                 ViewBag.TimeSaved = game.TimeSaved;
@@ -393,7 +394,9 @@ namespace RacingGame.Controllers
                     ViewBag.MoneyTimeRatio = moneyTimeRatio;
                     ViewBag.Bonus = moneyTimeRatio * 0.5;
 
-                    result = View("GameEnd");
+                    List<GamePlay> gamePlays = game.GetGamePlaysForUser(id);
+
+                    result = View("GameEnd", gamePlays);
                 }
             }
             else

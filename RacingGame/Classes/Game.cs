@@ -495,5 +495,26 @@ namespace RacingGame.Models
 
             return isGuidGenerated;
         }
+
+        public List<GamePlay> GetGamePlaysForUser(string iUserID)
+        {
+            List<GamePlay> userGamePlays = new List<GamePlay>();
+            DataTable dt = SQLServerCommon.SQLServerCommon.ExecuteQuery(String.Format("select * from {0} where {1} = {2};", "GamePlays", "UserID", "'" + iUserID + "'"), _DefaultConnectionString);
+
+            foreach (DataRow dr in dt.Rows)
+            {
+                userGamePlays.Add(new GamePlay() { UserID = dr[1].ToString(),
+                                                   Section = int.Parse(dr[2].ToString()),
+                                                   FreewayVelocity = int.Parse(dr[3].ToString()),
+                                                   TollwayVelocity = int.Parse(dr[4].ToString()),
+                                                   PriceSubject = int.Parse(dr[5].ToString()),
+                                                   PriceRandom = int.Parse(dr[6].ToString()),
+                                                   CurrentAccount = int.Parse(dr[7].ToString()),
+                                                   TimeSaved = double.Parse(dr[8].ToString())
+                                                 });
+            }       
+
+            return userGamePlays;
+        }
     }
 }

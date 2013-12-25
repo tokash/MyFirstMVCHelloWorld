@@ -1,4 +1,6 @@
-﻿@{
+﻿@model IEnumerable<RacingGame.Models.GamePlay>
+
+@{
     Layout = null;
 }
 <link href="@Url.Content("~/Content/Site.css")" rel="stylesheet" type="text/css" />
@@ -39,6 +41,71 @@
                     
                     <p>Thank you. You have completed the game. </p>
                 }
+
+                <p>This is a summary of the steps you took during the game:</p>
+                <table>
+                    <tr>
+                        <th>
+                            Section
+                        </th>
+                        <th>
+                            Rout taken
+                        </th>
+                        <th>
+                            Velocity
+                        </th>
+                        <th>
+                            Money spent
+                        </th>
+                        <th>
+                            Time saved
+                        </th>
+                    </tr>
+                
+                  @foreach (RacingGame.Models.GamePlay gamePlay in Model)
+                  {
+                      <tr>
+                        <td>
+                            @Html.DisplayFor(play => gamePlay.Section)
+                        </td>
+                        <td>
+                            @if (gamePlay.TimeSaved > 0)
+                            {
+                                <text>Highway</text>
+                            }
+                            else
+                            {
+                                <text>Freeway</text>
+                            }
+                        </td>
+                        <td>
+                            @if (gamePlay.TimeSaved > 0)
+                            {
+                                @Html.DisplayFor(play => @gamePlay.TollwayVelocity)
+                            }
+                            else
+                            {
+                                @Html.DisplayFor(play => @gamePlay.FreewayVelocity)
+                            }
+                            
+                        </td>
+                        <td>
+                            @if(gamePlay.TimeSaved > 0)
+                            {
+                                @Html.DisplayFor(play => @gamePlay.PriceRandom)
+                            }
+                            else
+                            {
+                                <text>0</text>
+                            }
+                            
+                        </td>
+                        <td>
+                            @Html.DisplayFor(play => @gamePlay.TimeSaved)
+                        </td>
+                      </tr>
+                  }
+                </table>
 
                 <p>Please click on “Next” to continue.</p>
                 <input type="submit" value="Next" />
