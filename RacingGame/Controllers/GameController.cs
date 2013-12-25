@@ -62,7 +62,16 @@ namespace RacingGame.Controllers
 
             if (answer != q.CorrectAnswer)
             {
-                ViewBag.ErrorMessage = q.ErrorMessage;
+                if (answer == null)
+                {
+                    ViewBag.ErrorMessage = "No answer was chosen, please choose an answer and press \"Submit answer\"";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = q.ErrorMessage; 
+                }
+                ViewData["UserID"] = id;
+
                 return View();
             }
             else
@@ -109,7 +118,16 @@ namespace RacingGame.Controllers
 
             if (answer != q.CorrectAnswer)
             {
-                ViewBag.ErrorMessage = q.ErrorMessage;
+                if (answer == null)
+                {
+                    ViewBag.ErrorMessage = "No answer was chosen, please choose an answer and press \"Submit answer\"";
+                }
+                else
+                {
+                    ViewBag.ErrorMessage = q.ErrorMessage;
+                }
+                ViewData["UserID"] = id;
+
                 return View();
             }
             else
