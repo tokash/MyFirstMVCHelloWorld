@@ -37,7 +37,8 @@ namespace RacingGame.Controllers
             }
             else
             {
-                ViewData["UserID"] = id;
+                Session["UserID"] = id;
+                ViewData["UserID"] = id + "_" + Game.GenerateUniqueID();
             }
 
             Question q = new Question()
@@ -209,7 +210,7 @@ namespace RacingGame.Controllers
             ViewData["PageNumber"] = pagenumber;
             ViewData["PageName"] = pagename;
 
-            //if (!IsVisitedPage(id, game.CurrentSection))
+            //if ((int)Session["BidSubmitted"] != 1)
             //{
                 ViewBag.Account = game.Account;
 
@@ -237,7 +238,7 @@ namespace RacingGame.Controllers
 
                     if (model.Bid > game.Account)
                     {
-                        ModelState.AddModelError("Bid", string.Format("Please enter a number between 0 and {0}.", game.Account)); 
+                        ModelState.AddModelError("Bid", string.Format("Please enter a number between 0 and {0}.", game.Account));
                     }
 
                     return View("Bid");
@@ -245,17 +246,18 @@ namespace RacingGame.Controllers
                 else
                 {
                     TempData["BidModel"] = model;
-                    return RedirectToAction("BidResult", new { id = id, pagenumber = pagenumber, pagename = "BidResult"});
-                } 
-            //}
-            //else
-            //{
-            //    return RedirectToAction("PageAlreadyVisited",
-            //                            new RouteValueDictionary(new { controller = "Game", action = "PageAlreadyVisited", Id = id })
-            //                           );
-            //}
+                    return RedirectToAction("BidResult", new { id = id, pagenumber = pagenumber, pagename = "BidResult" });
+                }
+                //}
+                //else
+                //{
+                //    return RedirectToAction("PageAlreadyVisited",
+                //                            new RouteValueDictionary(new { controller = "Game", action = "PageAlreadyVisited", Id = id })
+                //                           );
+                //}
 
-            
+
+            //}
         }
 
         public ActionResult BidResult(string id, int? pagenumber, string pagename)
@@ -367,6 +369,15 @@ namespace RacingGame.Controllers
                             while (currentSection < game.RoadSections)
                             {
                                 time += 10 / game.SpeedSet[currentSection - 1].VelocityFreeway;
+                                game.AddRecordToDB(id,
+                                   game.CurrentSection,
+                                   game.SpeedSet[game.CurrentSection - 1].VelocityFreeway,
+                                   game.SpeedSet[game.CurrentSection - 1].VelocityHighway,
+                                   0,
+                                   0,
+                                   0,
+                                   0);
+
                                 currentSection++;
                             } 
                         }
@@ -466,9 +477,21 @@ namespace RacingGame.Controllers
         public ActionResult StartOver(string id)
         {
             ClearUserStateDataFromDB(id, "siteState", "");
+
+            string newID = string.Empty;
+            string originalUserID = (string)Session["UserID"];
+            if (originalUserID != null)
+            {
+                newID = originalUserID + "_" + Game.GenerateUniqueID();
+            }
+            else
+            {
+                newID = Game.GenerateUniqueID();
+            }
+
             Session.Abandon();
             return RedirectToAction("WarningBeforeGame",
-                                        new RouteValueDictionary(new { controller = "Game", action = "WarningBeforeGame", Id = id })
+                                        new RouteValueDictionary(new { controller = "Game", action = "WarningBeforeGame", Id = newID })
                                        );
         }
 

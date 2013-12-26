@@ -4,6 +4,18 @@
     Layout = null;
 }
 
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js">
+</script>
+<script>
+    $().ready(function () {
+        $("#btnBid").click(function () {
+            $(this).hide();
+            $(this).after('<input type="button" disabled="disabled" value="' + $(this).val() + '" />');
+            return true;
+        });
+    });
+</script>
+
 @using (Html.BeginForm("Bid", "Game", new RouteValueDictionary { 
                                                      { "id", ViewData["UserID"] },
                                                      {"pagenumber", ViewData["PageNumber"]},
@@ -37,7 +49,7 @@
             <p>If your price would be greater or equal to the toll road’s random price, you will be able to use the toll road and pay the toll road’s price (the random price). </p>
             <p>If your price would be lower than the toll road’s random price, you will not be able to use the toll road and will have to complete this section using the regular freeway.</p>
 
-            <input type="submit" value="Bid !" />
+            <input id ="btnBid" type="submit" value="Bid !"/> <!--onclick="DisableClick();" runat="server"/>-->
         </div>
         
     </div>

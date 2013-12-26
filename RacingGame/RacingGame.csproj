@@ -54,9 +54,9 @@
     <PublishDatabaseSettings>
       <Objects>
         <ObjectGroup Name="DefaultConnection-Deployment" Order="1" xmlns="">
-          <Destination Path="Data Source=TOKASHYOS-PC%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" />
+          <Destination Path="Data Source=TOKASHYO-PC%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" />
           <Object Type="DbFullSql">
-            <PreSource Path="Data Source=TOKASHYOS-PC\SQLEXPRESS%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
+            <PreSource Path="Data Source=TOKASHYO-PC\SQLEXPRESS%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
             <Source Path="obj\Release\AutoScripts\DefaultConnection-Deployment_SchemaOnly.sql" Transacted="True" />
           </Object>
         </ObjectGroup>
