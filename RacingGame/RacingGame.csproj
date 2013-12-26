@@ -64,9 +64,8 @@
     </PublishDatabaseSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SQLServerCommon, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>bin\SQLServerCommon.dll</HintPath>
+    <Reference Include="SQLServerCommon">
+      <HintPath>Lib\SQLServerCommon.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.Entity" />
     <Reference Include="Microsoft.CSharp" />
