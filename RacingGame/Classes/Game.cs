@@ -64,7 +64,7 @@ namespace RacingGame.Models
 
             RandomizeSpeedset();
 
-            CreateEmptyDB();
+            //CreateEmptyDB();
         }
 
         #region Members
