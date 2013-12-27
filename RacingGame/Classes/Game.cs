@@ -15,18 +15,20 @@ namespace RacingGame.Models
         //internal static readonly string connStringInitial = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=master";
         //internal static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
-        private static readonly string dbName = "RaceGameDB";//"GameRaceDB";
+        //private static readonly string dbName = "RaceGameDB";
+        private static readonly string dbName = "db12638d85a01b4680aee2a2a0011a4228";
+
         //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
 
-        private static readonly string sqlCommandCreateDB = "CREATE DATABASE " + dbName + " ON PRIMARY " +
-                "(NAME = " + dbName + ", " +
-                "FILENAME = 'D:\\" + dbName + ".mdf', " +
-                "SIZE = 3MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
-                "LOG ON (NAME = " + dbName + "_LOG, " +
-                "FILENAME = 'D:\\" + dbName + ".ldf', " +
-                "SIZE = 1MB, " +
-                "MAXSIZE = 100MB, " +
-                "FILEGROWTH = 10%)";
+        //private static readonly string sqlCommandCreateDB = "CREATE DATABASE " + dbName + " ON PRIMARY " +
+        //        "(NAME = " + dbName + ", " +
+        //        "FILENAME = 'D:\\" + dbName + ".mdf', " +
+        //        "SIZE = 3MB, MAXSIZE = 10MB, FILEGROWTH = 10%) " +
+        //        "LOG ON (NAME = " + dbName + "_LOG, " +
+        //        "FILENAME = 'D:\\" + dbName + ".ldf', " +
+        //        "SIZE = 1MB, " +
+        //        "MAXSIZE = 100MB, " +
+        //        "FILEGROWTH = 10%)";
 
         internal static readonly string gameplaysTableSchema = "CREATE TABLE GamePlays (ID int IDENTITY(1,1), UserID varchar(50) NOT NULL, Section int NOT NULL, VelocityFreeway int NOT NULL, VelocityTollway int NOT NULL, PriceSubject int NOT NULL, PriceRandom int NOT NULL, Account int NOT NULL, TimeSavedForSection real NOT NULL , PRIMARY KEY (ID))";
         internal static readonly string[] GamePlaysTableColumns = { "UserID", "Section", "VelocityFreeway", "VelocityTollway", "PriceSubject", "PriceRandom", "Account", "TimeSavedForSection" };
@@ -47,7 +49,7 @@ namespace RacingGame.Models
         {
             _Name = iName;
             _GameData = (NameValueCollection)ConfigurationManager.GetSection("GameConfiguration");
-            _MasterConnectionString = ConfigurationManager.ConnectionStrings["MasterConnection"].ConnectionString;
+            //_MasterConnectionString = ConfigurationManager.ConnectionStrings["MasterConnection"].ConnectionString;
             _DefaultConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
 
             _Account = int.Parse(_GameData["StartingGamerCash"]);
@@ -64,7 +66,7 @@ namespace RacingGame.Models
 
             RandomizeSpeedset();
 
-            //CreateEmptyDB();
+            CreateEmptyDB();
         }
 
         #region Members
@@ -229,17 +231,17 @@ namespace RacingGame.Models
             try
             {
                 //Create DB
-                if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(_MasterConnectionString, dbName))//connStringInitial, dbName))
-                {
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(sqlCommandCreateDB, _MasterConnectionString);
+                //if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(_MasterConnectionString, dbName))//connStringInitial, dbName))
+                //{
+                //    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(sqlCommandCreateDB, _MasterConnectionString);
 
-                    //Create tables upon DB creation
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, _DefaultConnectionString);
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(siteStateTableSchema, _DefaultConnectionString);
-                    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(commentsTableSchema, _DefaultConnectionString);
-                }
-                else
-                {
+                //    //Create tables upon DB creation
+                //    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(gameplaysTableSchema, _DefaultConnectionString);
+                //    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(siteStateTableSchema, _DefaultConnectionString);
+                //    SQLServerCommon.SQLServerCommon.ExecuteNonQuery(commentsTableSchema, _DefaultConnectionString);
+                //}
+                //else
+                //{
                     //Check if all tables exist, if not, create them
                     int i = 0;
                     foreach (string tableName in tableNames)
@@ -250,7 +252,7 @@ namespace RacingGame.Models
                         }
                         i++;
                     }
-                }
+                //}
 
                 ////LocalDB = "RaceGameDB"
                 //if (!SQLServerCommon.SQLServerCommon.IsDatabaseExists(connString, dbName))

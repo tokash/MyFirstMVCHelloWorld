@@ -54,7 +54,7 @@
     <PublishDatabaseSettings>
       <Objects>
         <ObjectGroup Name="DefaultConnection-Deployment" Order="1" xmlns="">
-          <Destination Path="Data Source=TOKASHYO-PC%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" />
+          <Destination Path="Server=12638d85-a01b-4680-aee2-a2a0011a4228.sqlserver.sequelizer.com%3bDatabase=db12638d85a01b4680aee2a2a0011a4228%3bUser ID=yjyfkgjqztoymcls%3bPassword=UXMQDHFLPKuVGw2YKnibfszfJK4LSjfiFbqeXSRwXvEV4JfG2Rwr7zLBxFf3N32D%3b" />
           <Object Type="DbFullSql">
             <PreSource Path="Data Source=TOKASHYO-PC\SQLEXPRESS%3bInitial Catalog=RaceGameDB%3bUser ID=sa%3bPassword=tokash30%3b" ScriptSchema="True" ScriptData="False" CopyAllFullTextCatalogs="False" DriDefaults="True" />
             <Source Path="obj\Release\AutoScripts\DefaultConnection-Deployment_SchemaOnly.sql" Transacted="True" />
