@@ -16,7 +16,8 @@ namespace RacingGame.Models
         //internal static readonly string connString = "Server=TOKASHYOS-PC\\SQLEXPRESS;User Id=sa;Password=tokash30;database=RaceGameDB";
         //private static readonly string connString = "Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=GameRaceDB;User ID=tokash@fqw1x1y2s2;Password=Yt043112192;Trusted_Connection=False;Encrypt=True;Connection Timeout=30;";
         //private static readonly string dbName = "RaceGameDB";
-        private static readonly string dbName = "db12638d85a01b4680aee2a2a0011a4228";
+        //private static readonly string dbName = "db12638d85a01b4680aee2a2a0011a4228";
+        private static readonly string dbName = "DB_9AD737_RaceGameDB";
 
         //"Server=tcp:fqw1x1y2s2.database.windows.net,1433;Database=RacingGALLIpkFTF;User ID=tokash@fqw1x1y2s2;Password={your_password_here};Trusted_Connection=False;Encrypt=True;Connection Timeout=30;"
 

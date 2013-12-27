@@ -197,11 +197,7 @@
     <Content Include="Content\Site.css" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
     <None Include="Properties\PublishProfiles\RaceGame.pubxml" />
-    <None Include="Properties\PublishProfiles\RacingGameStaging - FTP %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\RacingGameStaging - FTP.pubxml" />
-    <None Include="Properties\PublishProfiles\RacingGameStaging - Web Deploy %282%29.pubxml" />
-    <None Include="Properties\PublishProfiles\RacingGameStaging - Web Deploy.pubxml" />
-    <None Include="Properties\PublishProfiles\Test.pubxml" />
+    <None Include="Properties\PublishProfiles\SmarterASP.pubxml" />
     <None Include="Properties\PublishProfiles\TestLocal.pubxml" />
     <None Include="Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Scripts\jquery-1.7.1.js" />
